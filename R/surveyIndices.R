@@ -290,6 +290,29 @@ Calc.index <- function (sfile, colname, strata.list, std.toglengd = 4,
   return(list(result = result, Res.names = Res.names, aggr.output = aggr.output))
 }
 
+#' Sums mean, standard error, cv by aggregated area
+#' 
+#' Function used both in \code{\link{Calc.index}} and \code{\link{index.aggregate}}.
+#' 
+#' @export
+#' @aliases index.aggregate.combine
+#' @param result Result
+#' @param index Index
+Combine.strata <- function (result, index)
+{
+  if (!missing(index)) result <- result[index, ]
+  Mean <- sum(result$mean * result$area)/sum(result$area)
+  Sum <- sum(result$mean * result$area)
+  total <- sum(result$total)
+  totalarea <- sum(result$area)
+  i <- !is.na(result$sdev)
+  tmpsum <- sum(result$mean[i] * result$area[i])
+  Calc.sdev <- sqrt(sum(result$sdev[i]^2 * result$area[i]^2/result$count[i])/sum(result$area[i])^2)
+  Sdev <- Calc.sdev * Sum/tmpsum
+  return(data.frame(mean = Mean, se = Sdev, cv = Sdev/Mean, 
+                    count = sum(result$count), area = totalarea, total = total))
+}
+
 #' Standardizes value by tow length
 #' 
 #' Standaridize value of interest. This is equivalent to the first part of 

@@ -88,3 +88,16 @@ NULL
 #' @author Some author
 NULL
 
+#' @name LENGDIR
+#' @title Some title
+#' @description from SMB RData
+#' @docType data
+#' @usage Some usage
+#' @format Some format
+#' @source
+#' \code{
+#' attach('/net/hafkaldi/u2/reikn/Splus5/SMB/.RData')
+#' save('LENGDIR',file='data/LENGDIR.rda')
+#' detach('file:/net/hafkaldi/u2/reikn/Splus5/SMB/.RData')}
+#' @author Some author
+NULL

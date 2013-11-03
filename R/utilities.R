@@ -123,3 +123,9 @@ gJoin <-
     return(outcome)
   }
 
+#' sdev
+#' 
+#' Calculates standard deviation from variance
+#' 
+#' @param x Value
+sdev <- function (x) return(sqrt(var(x)))
