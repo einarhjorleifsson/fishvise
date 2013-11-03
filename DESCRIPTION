@@ -3,7 +3,15 @@ Type: Package
 Title: What the package does (short line)
 Version: 1.0
 Date: 2013-11-03
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Depends:
+    plyr
+LazyData: yes
+Author: Hoskuldur Bjornsson <hoski@hafro.is>
+Maintainer: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 Description: More about what it does (maybe more than one line)
 License: GPL-2
+Collate:
+    'fishvise.R'
+    'surveyIndices.R'
+    'utilities.R'
+    'dataSurveys.R'

@@ -1,1 +1,5 @@
-exportPattern("^[[:alpha:]]+")
+export(bioIndex)
+export(Calc.index)
+export(index.aggregate)
+export(index.standardize)
+export(index.stratify)
