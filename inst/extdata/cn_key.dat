@@ -1,0 +1,60 @@
+class	id	comment	sideNotes
+time	year		
+time	age		
+N	N		
+mortality	Z		
+mortality	M		
+mortality	tF	Total fishing mortality	
+catch	oC	oberved total catch	
+catch	pC	predicted total catch	
+catch	rC	catch residuals	
+survey	oU1	observed spring survey index	
+survey	pU1	predicted spring survey index	
+survey	rU1	spring survey residuals	
+survey	oU2	observed fall survey index	
+survey	pU2	predicted fall survey index	
+survey	rU2	fall survey residuals	
+weight	wC	catch weights	
+weight	wX	spawning stock weight	
+weight	wU1	spring survey weights	
+weight	wN	stock weight	
+maturity	xC	catch maturity	
+maturity	xU	survey maturity	
+maturity	xN	spawning stock maturity	
+biomass	ssb	spawning biomass	
+time	a1	minimum age	
+time	a2	maximum age	
+time	aR	recruitment age	
+time	aP	age plus group	
+time	y1	minimum year (start year)	
+time	y2	maximum year (end year)	
+time	f1	first age in reference F	
+time	f2	last age in reference F	
+mortality	hF	human consumption F	
+mortality	dF	discard F	
+mortality	iF	industrial consumption F	
+selection	hS	human consumption selection	
+selection	dS	discard selection	
+selection	iS	industrial consumption selection	
+weight	hW	human consumption catch weight	
+weight	dW	discard weights	
+weight	iW	industrial consumption catch weights	
+mortality	refF	reference fishing mortality	F5.10
+yield	pY	predicted yield	calccatch
+biomass	ssb	spawning biomass	SSB
+biomass	cSSB	spawning biomass based on maturity in the catch	OldSSB
+biomass	CbioR	xxx	CbioR
+biomass	refB	reference biomass	Cbio4.
+biomass	usb	survey biomass	Cbio1
+numbers	n1	N age 1	N1
+numbers	r	recruitment	N3
+numbers	n6	N age 6	N6
+mortality	hr	harvest ratio	HarvestRatio
+yield	oY	oberved yield	obscatch
+nonsense	a50	xxx	a50
+survey	pI1	estimated survey 1 biomass	CalcSurveybio
+survey	oI1	observed survey 1 biomass	Obssurveybio
+survey	pI2	estimated survey 2 biomass	CalcSurvey2bio
+survey	oI2	observed survey 2 biomass	Obssurvey2bio
+numbers	pN	predicted N	PredN
+yield	qY	fishing year yield	FishingYearCatch

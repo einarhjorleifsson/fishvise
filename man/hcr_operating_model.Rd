@@ -1,0 +1,23 @@
+\name{hcr_operating_model}
+\alias{hcr_operating_model}
+\title{Operating model}
+\usage{
+  hcr_operating_model(d, y, h, ctr, Fmult, nR = 1)
+}
+\arguments{
+  \item{d}{XXX}
+
+  \item{y}{XXX}
+
+  \item{h}{XXX}
+
+  \item{ctr}{ctr_rec}
+
+  \item{Fmult}{XXX}
+
+  \item{nR}{XXX}
+}
+\description{
+  XXX
+}
+
