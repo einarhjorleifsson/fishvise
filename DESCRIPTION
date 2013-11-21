@@ -1,17 +1,27 @@
 Package: fishvise
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: Miscalaneous set of functions related fish stock assessment work
+Version: 0.01
 Date: 2013-11-03
-Depends:
-    plyr
-LazyData: yes
-Author: Hoskuldur Bjornsson <hoski@hafro.is>
-Maintainer: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 Description: More about what it does (maybe more than one line)
+VignetteBuilder: knitr
+Depends:
+    plyr,
+    FLCore,
+    stringr,
+    reshape2,
+    ggplot2
+Suggests:
+    knitr
+LazyData: yes
+Author: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
+Maintainer: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 License: GPL-2
 Collate:
     'fishvise.R'
-    'surveyIndices.R'
     'utilities.R'
-    'dataSurveys.R'
+    'data.R'
+    'rwx.R'
+    'do_ggplot.R'
+    'srmsymc.R'
+    'fpress.R'

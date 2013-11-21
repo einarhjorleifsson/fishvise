@@ -1,3 +1,37 @@
+#' @title Trim 'tabs' from start and end of string
+#' 
+#' @description Function is enspired by str_trim function in the stringr package. 
+#' The str_trim function is for trimming whitespace, here tabs are trimmed.
+#' @param string input character vector
+#' @param side side on which character string is removed (left, right or both)
+#' @export 
+
+str_trim_tab <- function(string,side='both') {
+  string <- stringr:::check_string(string)
+  stopifnot(length(side) == 1)
+  side <- match.arg(side, c("left", "right", "both"))
+  pattern <- switch(side, left = "^\\t+", right = "\\t+$", 
+                    both = "^\\t+|\\t+$")
+  str_replace_all(string, pattern, "")
+}
+
+#' @title Trim 'commas' from start and end of string
+#' 
+#' @description Function is enspired by str_trim function in the stringr package. 
+#' The str_trim function is for trimming whitespace, here commmas are trimmed.
+#' @param string input character vector
+#' @param side side on which character string is removed (left, right or both)
+#' @export
+
+str_trim_commas <- function(string,side='both') {
+  string <- stringr:::check_string(string)
+  stopifnot(length(side) == 1)
+  side <- match.arg(side, c("left", "right", "both"))
+  pattern <- switch(side, left = "^,+", right = ",+$", 
+                    both = "^,+|,t+$")
+  str_replace_all(string, pattern, "")
+}
+
 #' apply.shrink
 #' 
 #' local copy of an old faithful from package geo
@@ -129,3 +163,39 @@ gJoin <-
 #' 
 #' @param x Value
 sdev <- function (x) return(sqrt(var(x)))
+
+
+#' @title Align stock and recruitment data
+#' 
+#' @description XXX
+#' 
+#' @export
+#' 
+#' @param data data.frame that contains in its first three rows year, recruitment
+#' and ssb.
+#' @param col.names vector that contains the names for year, recruitment and ssb.
+#' @param aR integer that contains the age of recruits
+#' 
+align_ssb_r <- function(data,col.names=c("year","r","ssb"),aR) {
+  x <- data[,col.names]
+  data$r <- c(x$r[(aR+1):nrow(x)],rep(NA,aR))
+  return(data)
+}
+
+#' @title Calculate quantiles
+#' 
+#' @description xxx
+#' 
+#' @param d xx
+#' @param d.det xx
+#' @param variable xx
+#' @export
+
+calc.quantiles <- function(d, d.det, variable="variable") {
+  q05 <- q10 <- q16 <- q50 <- q84 <- q90 <- q95 <- value <- NULL
+  x <- ddply(d,c("variable"),summarise,q05=quantile(value,0.05),q10=quantile(value,0.10),q16=quantile(value,0.16),q50=quantile(value,0.50),q84=quantile(value,0.84),q90=quantile(value,0.90),q95=quantile(value,0.95))
+  if(!missing(d.det)) x$mean <- d.det$value
+  
+  return(x)
+}
+
