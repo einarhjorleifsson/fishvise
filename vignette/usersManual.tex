@@ -1,0 +1,171 @@
+\documentclass[a4paper]{article}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,margin=2.5cm}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{amstext}
+\usepackage{graphicx}
+\usepackage{longtable}
+
+\begin{document}
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Some notes on the fishvise-package}
+
+\title{Some notes on setting up HCR simulations using the fishvise package}
+\author{Einar Hjörleifsson}
+\maketitle
+\newpage{}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: fishvise}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: FLCore}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: grid}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: lattice}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: MASS}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# FLCore 2.5.0 development version}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Attaching package: 'FLCore'}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# The following object is masked from 'package:plyr':\\\#\# \\\#\#\ \ \ \  desc}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# The following object is masked from 'package:ggplot2':\\\#\# \\\#\#\ \ \ \  \%+\%}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# The following object is masked from 'package:base':\\\#\# \\\#\#\ \ \ \  cbind, rbind}}\end{kframe}
+\end{knitrout}
+
+
+\begin{itemize}\raggedright
+  \item R version 3.0.1 (2013-05-16), \verb|x86_64-redhat-linux-gnu|
+  \item Base packages: base, datasets, graphics, grDevices, grid, methods,
+    stats, utils
+  \item Other packages: data.table~1.8.8, fishvise~0.01, FLCore~2.5.20131114,
+    ggplot2~0.9.3.1, knitr~1.2, lattice~0.20-15, lubridate~1.3.0, MASS~7.3-27,
+    plyr~1.8, RColorBrewer~1.0-5, reshape2~1.2.2, scales~0.2.3, stringr~0.6.2
+  \item Loaded via a namespace (and not attached): colorspace~1.2-2,
+    dichromat~2.0-0, digest~0.6.3, evaluate~0.4.4, formatR~0.8, gtable~0.1.2,
+    labeling~0.2, munsell~0.4.2, proto~0.3-10, stats4~3.0.1, tools~3.0.1
+\end{itemize}
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+[1] "This document was created in knitr"
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\newpage{}
+\tableofcontents{}
+\newpage{}
+
+\section{Preamble}
+some nice stuff
+\section{A quick start}
+Just to give a hint where we are heading:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlfunctioncall{suppressPackageStartupMessages}(\hlfunctioncall{require}(fishvise))
+ctr_dim <- \hlfunctioncall{list}(a1 = 0, a2 = 14, y1 = 2011, y2 = 2031, iter = 1000, 
+    f1 = 5, f2 = 10, nR = 1, HRATE = \hlfunctioncall{c}(0.001, 0.05, 0.1, 0.125, \hlfunctioncall{seq}(0.15, 
+        0.3, by = 0.01)))
+ctr_str <- \hlfunctioncall{list}(tac_y1 = 170, tac_y2 = 180, y1Bias = 1)
+ctr_rec <- \hlfunctioncall{list}(cv = 0.32, rho = 0, model = 1, r_mean = 128, ssb_break = 220)
+ctr_ass <- \hlfunctioncall{list}(cv = 0.15, rho = 0.45, error_type = 1, bias = 1)
+ctr_wgt <- \hlfunctioncall{list}(cv = 0.12, rho = 0.6, error_type = 2, refBweight = 1)
+ctr_hcr <- \hlfunctioncall{list}(alphaTAC = 0.5, Btrigger = 0, delay = 0, model_number = 3)
+ctr_imp <- \hlfunctioncall{list}(beta1 = 1e-10, beta2 = 1)
+d <- \hlfunctioncall{hcr_set_dimensions}(ctr_dim)
+d$cvcW <- \hlfunctioncall{hcr_set_wgtErrors}(d$cvcW, ctr_wgt)
+d$cvsW <- d$cvcW
+d$cvR <- \hlfunctioncall{hcr_set_recErrors}(d$cvR, ctr_rec)
+d$assError <- \hlfunctioncall{hcr_set_assErrors}(d$assError, ctr_ass)
+file <- \hlfunctioncall{paste}(\hlfunctioncall{path.package}(\hlstring{"fishvise"}), \hlstring{"extdata/hcr_iCod.dat"}, sep = \hlstring{"/"})
+dat_y1 <- \hlfunctioncall{hcr_read_startfile}(file)
+d <- \hlfunctioncall{hcr_set_starting_conditions}(dat_y1, d, ctr_str, wgt_error_type = ctr_wgt$error_type, 
+    refBweight = ctr_wgt$refBweight)
+
+HRATE <- ctr_dim$HRATE
+n_years <- ctr_dim$y2 - ctr_dim$y1 + 1
+n_iters <- ctr_dim$iter
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Do the run:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcomment{# First year}
+y <- 1
+\hlfunctioncall{for} (h in 1:\hlfunctioncall{length}(HRATE)) \{
+\hlcomment{    # Estimates the true fishing mortality}
+    Fmult <- \hlfunctioncall{hcr_TAC_to_Fmult}(d, y, h)
+\hlcomment{    # Operating model}
+    d <- \hlfunctioncall{hcr_operating_model}(d, y, h, ctr_rec, Fmult, nR = 1)
+\}
+
+\hlcomment{# The inbetween years}
+\hlfunctioncall{for} (h in 1:\hlfunctioncall{length}(HRATE)) \{
+    \hlfunctioncall{for} (y in 2:(n_years - 1)) \{
+\hlcomment{        # Implementation error}
+        d$TAC[y, h, ] <- \hlfunctioncall{hcr_implementation}(d$TAC[y, h, ], d$TAC[y - 
+            1, h, ], ctr_imp$beta1, ctr_imp$beta2)
+\hlcomment{        # Estimates the true fishing mortality}
+        Fmult <- \hlfunctioncall{hcr_TAC_to_Fmult}(d, y, h)
+\hlcomment{        # Operating model}
+        d <- \hlfunctioncall{hcr_operating_model}(d, y, h, ctr_rec, Fmult, nR = 1)
+\hlcomment{        # Observation model}
+        hat <- \hlfunctioncall{hcr_observation_error}(d, y, h, HRATE[h], Fmult, ctr_hcr$delay, 
+            ctr_ass$bias, ctr_ass$error_type)
+\hlcomment{        # Decision model (TAC next year)}
+        d$TAC[y + 1, h, ] <- \hlfunctioncall{switch}(ctr_hcr$model_number, \hlfunctioncall{stop}(\hlstring{"not yet implemented"}), 
+            \hlfunctioncall{hcr_management_fmort}(), \hlfunctioncall{hcr_management_bio}(hat$bio, hat$ssb, 
+                \hlfunctioncall{rep}(HRATE[h], n_iters), ctr_hcr$Btrigger, d$TAC[y, h, 
+                  ], ctr_hcr$alphaTAC))
+    \}
+\}
+
+\hlcomment{# Last year}
+y <- n_years
+\hlfunctioncall{for} (h in 1:\hlfunctioncall{length}(HRATE)) \{
+\hlcomment{    # Estimates the true fishing mortality}
+    Fmult <- \hlfunctioncall{hcr_TAC_to_Fmult}(d, y, h)
+\hlcomment{    # Operating model}
+    d <- \hlfunctioncall{hcr_operating_model}(d, y, h, ctr_rec, Fmult, nR = 1)
+\}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Summarise the data:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+sY <- \hlfunctioncall{melt}(\hlfunctioncall{colSums}(d$C * d$cW))
+sB <- \hlfunctioncall{melt}(\hlfunctioncall{colSums}(d$N * d$cW * d$selB))
+sS <- \hlfunctioncall{melt}(\hlfunctioncall{colSums}(d$N * \hlfunctioncall{exp}(-(d$pM * d$M + d$pF * d$tF)) * d$sW * d$mat))
+sR <- \hlfunctioncall{melt}(\hlfunctioncall{drop}(d$N[1, , , ]))
+sF <- \hlfunctioncall{melt}(\hlfunctioncall{colMeans}(d$tF[(ctr_dim$f1 + 1):(ctr_dim$f2 + 1), , , ]))
+dat <- \hlfunctioncall{data.frame}(year = sY$year, iter = sY$iter, target = sY$hrate, 
+    rec = sR$value, refbio = sB$value, ssb = sS$value, relssb = \hlfunctioncall{rep}(NA, 
+        \hlfunctioncall{nrow}(sS)), fbar = sF$value, catch = sY$value, hr = sY$value/sB$value)
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+And plot the illusive MSY:
+
+

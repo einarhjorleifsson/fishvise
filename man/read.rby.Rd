@@ -1,0 +1,51 @@
+\name{read.rby}
+\alias{read.rby}
+\title{Reads results-by-year (sum file)}
+\usage{
+  read.rby(file, format = "rvk",
+    cn = c("year", "r", "refB", "ssb", "oY", "pY", "refF", "hr", "oI1", "pI1", "oI2", "pI2"),
+    info = FALSE, name_stock = NA, yAss = NA, aR = NA,
+    aF = c(NA, NA), Run = NA, Model = NA)
+}
+\arguments{
+  \item{file}{If it does not contain an absolute path, the
+  file name is relative to the current working directory,
+  getwd().}
+
+  \item{format}{Character specifying the origin of the
+  input file. So far implemented "rvk" and "abd" format.}
+
+  \item{cn}{Names of columns to return for "rvk" format.}
+
+  \item{info}{boolean. If FALSE (default) only data.frame
+  with XXX returned. If TRUE a list containing the
+  data.frame and a list containing the additional
+  information is returned. See return for additional XXX.}
+
+  \item{name_stock}{character. Stock name.}
+
+  \item{yAss}{integer. Assessment year}
+
+  \item{aR}{integer. Age of recruitment.}
+
+  \item{aF}{vector. Elements contain youngest and oldest
+  age used to calculate the reference fishing mortality.}
+
+  \item{Run}{Run name (spring survey, fall survey, both
+  surveys, etc ..)}
+
+  \item{Model}{Model name (Adcam, Adapt, Separable, etc
+  ..)}
+}
+\description{
+  Reads a stock summary file in table format and returns it
+  as a data frame.
+}
+\examples{
+file <- paste(path.package("fishvise"),'extdata/resultsbyyear',sep='/')
+read.rby(file)
+
+file <- paste(path.package("fishvise"),'extdata/NSH.sum',sep='/')
+read.rby(file,format="abd")
+}
+
