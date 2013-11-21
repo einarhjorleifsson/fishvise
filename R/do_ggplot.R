@@ -2,11 +2,17 @@
 #' 
 #' @description xx
 #' 
+<<<<<<< HEAD
 #' @export
 #' 
 #' @param x xx
 #' @param d xx
 #' 
+=======
+#' @param x xx
+#' @param d xx
+#' @export 
+>>>>>>> e62d57b89b528efb4fd4a2364de85159cda57e99
 do.ggplot <- function(x,d) {
   q05 <- q10 <- q16 <- q50 <- q84 <- q90 <- q95 <- value <- variable <- NULL
   gg.plot <- ggplot(x,aes(variable)) +  
