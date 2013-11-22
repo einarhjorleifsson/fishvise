@@ -6,7 +6,14 @@
 #' 
 #' @param x xx
 #' @param d xx
+<<<<<<< HEAD
 
+=======
+#' 
+#' @param x xx
+#' @param d xx
+#' @export 
+>>>>>>> 3c437ded33b444e4f9e3dc1c76c2d951acd7549d
 
 do.ggplot <- function(x,d) {
   q05 <- q10 <- q16 <- q50 <- q84 <- q90 <- q95 <- value <- variable <- NULL
