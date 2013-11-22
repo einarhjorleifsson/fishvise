@@ -1,3 +1,25 @@
+#' @title HCR - Read control file
+#'
+#' @description XXX
+#' 
+#' @export
+#' 
+#' @param file filename
+
+hcr_read_ctr <- function (file) 
+{
+  x <- read.table(file)
+  ctr <- list()
+  for (i in 1:nrow(x)) ctr[[i]] <- x[i,]
+  names(ctr) <- c("a1","a2","y1","y2","iter","f1","f2","nR","tac_y1","tac_y2",
+                  "y1Bias","r_cv","r_rho","r_model","r_mean","ssb_break",
+                  "a_cv","a_rho","a_error","a_bias","w_cv","w_rho","w_error",
+                  "w_refB","h_alpa","b_trigger","delay","h_number",
+                  "i_number","b2","b2")
+  return(ctr)
+}
+
+
 #' @title Initial HCR objects
 #' 
 #' @description XXX
@@ -49,6 +71,16 @@ hcr_set_dimensions <- function(ctr) {
                            hrate=HRATE,
                            iter=1:iter))
   d$cvR <- d$rDEV <- d$R <- x
+  
+  #
+  d$cvcW <- hcr_set_wgtErrors(d$cvcW,ctr)
+  d$cvsW <- d$cvcW
+  #
+  d$cvR <- hcr_set_recErrors(d$cvR,ctr)
+  #
+  d$assError <- hcr_set_assErrors(d$assError,ctr)
+  
+  #X <<- d
   return(d)
 }
 
@@ -71,8 +103,8 @@ hcr_set_assErrors <- function(d,ctr)
   x <- array(rnorm(n_years + 1000 * n_iters),
              dim=c(n_years + 1000,  n_iters))
 
-  for (i in 2:n_years) x[i,] <- ctr$rho * x[i-1,] + sqrt(1-ctr$rho^2) * x[i,]
-  x <- ctr$cv * x
+  for (i in 2:n_years) x[i,] <- ctr$a_rho * x[i-1,] + sqrt(1-ctr$a_rho^2) * x[i,]
+  x <- ctr$a_cv * x
   
   # take a subset of samples, ensures that there is potential a bias
   # in the assessment year (does not matter if looking at long term
@@ -113,8 +145,8 @@ hcr_set_wgtErrors <- function(d,ctr)
   x <- array(rnorm(n_years * n_iters),
              dim=c(n_years,  n_iters))
   
-  for (y in 2:n_years) x[y,] <- ctr$rho * x[y-1,] + sqrt(1 - ctr$rho^2) * x[y,]
-  x <- ctr$cv * x
+  for (y in 2:n_years) x[y,] <- ctr$w_rho * x[y-1,] + sqrt(1 - ctr$w_rho^2) * x[y,]
+  x <- ctr$w_cv * x
   for (a in 1:n_ages) {
     for (h in 1:n_hrates) d[a,,h,] <- x
   }
@@ -143,8 +175,8 @@ hcr_set_recErrors <- function(d,ctr)
   x <- array(rnorm(n_years * n_iters),
              dim=c(n_years , n_iters))
   
-  for (y in 2:n_years) x[y,] <- ctr$rho * x[y-1,] + sqrt(1 - ctr$rho^2) * x[y,]
-  x <- exp(x*ctr$cv)
+  for (y in 2:n_years) x[y,] <- ctr$r_rho * x[y-1,] + sqrt(1 - ctr$r_rho^2) * x[y,]
+  x <- exp(x*ctr$r_cv)
   for (h in 1:n_hrates) d[,h,] <- x
   
   return(d)
@@ -194,11 +226,9 @@ hcr_read_startfile <- function(file) {
 #' @param dat_y1 XXX
 #' @param d XXX
 #' @param ctr XXX
-#' @param wgt_error_type XXX
-#' @param refBweight XXX
 #' 
 
-hcr_set_starting_conditions <- function(dat_y1, d, ctr, wgt_error_type, refBweight) 
+hcr_set_starting_conditions <- function(dat_y1, d, ctr) 
   {
   
 
@@ -223,20 +253,22 @@ hcr_set_starting_conditions <- function(dat_y1, d, ctr, wgt_error_type, refBweig
   d$TAC[2,,]  <- ctr$tac_y2 # Already set TAC in the advisory year (year 2)
   
   n_years <- dim(d$cW)[2]
-  if(wgt_error_type == 1) {
+  if(ctr$w_error == 1) {
     d$cW[,2:n_years,,] <- d$cW[,2:n_years,,] * exp(d$cvcW[,2:n_years,,])
     d$sW[,2:n_years,,] <- d$sW[,2:n_years,,] * exp(d$cvsW[,2:n_years,,])
   }
   
-  if(wgt_error_type == 2) {
+  if(ctr$w_error == 2) {
     d$cW[,2:n_years,,] <- d$cW[,2:n_years,,] * (1+d$cvcW[,2:n_years,,])
     d$sW[,2:n_years,,] <- d$sW[,2:n_years,,] * (1+d$cvsW[,2:n_years,,])
   }
   
-  if(refBweight == 0) d$bW <- d$sW   # use stock weights to calculate ref bio
-  if(refBweight == 1) d$bW <- d$cW   # use catch weights to calculate ref bio
+  if(ctr$w_refB == 0) d$bW <- d$sW   # use stock weights to calculate ref bio
+  if(ctr$w_refB == 1) d$bW <- d$cW   # use catch weights to calculate ref bio
   
-  return(d)
+  #X <<- list()
+  X <<- d # Pass as a global variable - this stuff will be updated in the loop
+  #return(d)
 }
 
 
@@ -248,18 +280,17 @@ hcr_set_starting_conditions <- function(dat_y1, d, ctr, wgt_error_type, refBweig
 #' 
 #' @export 
 #' 
-#' @param d XXX
 #' @param y XXX
 #' @param h XXX
 #' 
-hcr_TAC_to_Fmult <- function(d,y,h) {
+hcr_TAC_to_Fmult <- function(y,h) {
 
-  TAC <- d$TAC[y,h,]
-  Na  <-  d$N[,y,h,]
-  Sa  <-   d$selF[,y,h,]
-  Da  <-  d$selD[,y,h,]
-  Ma  <-  d$M[,y,h,]
-  Wa  <-  d$cW[,y,h,]
+  TAC <- X$TAC[y,h,]
+  Na  <-  X$N[,y,h,]
+  Sa  <-   X$selF[,y,h,]
+  Da  <-  X$selD[,y,h,]
+  Ma  <-  X$M[,y,h,]
+  Wa  <-  X$cW[,y,h,]
   
   epsilon <- 1e-04
   Ba <- Na * Wa
@@ -285,21 +316,17 @@ hcr_TAC_to_Fmult <- function(d,y,h) {
 
 #' @title Add implementation error to TAC
 #' 
-#' @description XXX
+#' @description Dummy function
 #' 
 #' @export
 #' 
-#' @param TACy2 XXX
-#' @param TACy1 XXX
-#' @param beta1 XXX
-#' @param beta2 XXX
 
-hcr_implementation <- function (TACy2, TACy1, beta1, beta2) 
+hcr_implementation_model_1 <- function () #(TACy2, TACy1, beta1, beta2) 
   {
-  i <- TACy2 < TACy1
-  if (sum(i) > 0) 
-    TACy2[i] <- TACy2[i] * (TACy1[i]/TACy2[i])^(rbeta(1,beta1, beta2))
-  return(TACy2)
+  #i <- TACy2 < TACy1
+  #if (sum(i) > 0) 
+  #  TACy2[i] <- TACy2[i] * (TACy1[i]/TACy2[i])^(rbeta(1,beta1, beta2))
+  #return(TACy2)
 }
 
 #' @title Operating model
@@ -308,29 +335,28 @@ hcr_implementation <- function (TACy2, TACy1, beta1, beta2)
 #' 
 #' @export
 #' 
-#' @param d XXX
 #' @param y XXX
 #' @param h XXX
 #' @param ctr ctr_rec
 #' @param Fmult XXX
 #' @param nR XXX
 
-hcr_operating_model <- function(d, y, h, ctr, Fmult, nR=1) {
+hcr_operating_model <- function(y, h, ctr, Fmult, nR=1) {
   
-  n_ages  <- dim(d$N)[1]
-  n_years <- dim(d$N)[2]
+  n_ages  <- dim(X$N)[1]
+  n_years <- dim(X$N)[2]
   
-  N   <- d$N[,y ,h,]
-  cW  <- d$cW[,y,h,]
-  sW  <- d$sW[,y,h,]
-  xN <- d$mat[,y,h,]
-  M   <- d$M[,y,h,]
-  pF <- d$pF[,y,h,]
-  pM <- d$pM[,y,h,]
+  N   <- X$N[,y ,h,]
+  cW  <- X$cW[,y,h,]
+  sW  <- X$sW[,y,h,]
+  xN <- X$mat[,y,h,]
+  M   <- X$M[,y,h,]
+  pF <- X$pF[,y,h,]
+  pM <- X$pM[,y,h,]
   
-  tF <- t(Fmult*t(d$selF[,y,h,]))
-  dF <- t(Fmult*t(d$selD[,y,h,]))
-  d$tF[,y,h,] <- tF
+  tF <- t(Fmult*t(X$selF[,y,h,]))
+  dF <- t(Fmult*t(X$selD[,y,h,]))
+  X$tF[,y,h,] <<- tF
   
   # Conventional ssb
   ssb <- colSums(N * exp( -(pM * M + pF * (tF + dF))) * xN * sW)
@@ -340,21 +366,21 @@ hcr_operating_model <- function(d, y, h, ctr, Fmult, nR=1) {
   # ssb <- colSums(Ny*exp(-(My*pMy+(Fy+Dy)*pFy))*maty*sWy * (0.005*sWy))
   
   
-  d$N[1,y,h,] <- hcr_recruitment_model(ssb = ssb, d$cvR[y, h,], ctr=ctr)
+  X$N[1,y,h,] <<- hcr_recruitment_model(ssb = ssb, X$cvR[y, h,], ctr=ctr)
   
-  N[1,] <- d$N[1,y,h,] # update the recruits in the current year
+  N[1,] <- X$N[1,y,h,] # update the recruits in the current year
   # TAKE THE CATCH
-  d$C[,y,h,] <- N * tF/ (tF + dF + M + 0.00001)*(1-exp(- (tF + dF + M)))
+  X$C[,y,h,] <<- N * tF/ (tF + dF + M + 0.00001)*(1-exp(- (tF + dF + M)))
   # NEXT YEARS STOCK
 
   NyEnd <- N * exp( -( tF + dF + M))
   if(y < n_years ) {
-    d$N[2:n_ages, y+1, h,] <- NyEnd[1:(n_ages-1),]
+    X$N[2:n_ages, y+1, h,] <<- NyEnd[1:(n_ages-1),]
     # plus group calculation
-    d$N[n_ages,y+1,h,] <- d$N[n_ages,y+1,h,] +
-      d$N[n_ages,y,h,] * exp(-d$tF[n_ages,y,h,] - d$M[n_ages,y,h,])
+    X$N[n_ages,y+1,h,] <<- X$N[n_ages,y+1,h,] +
+      X$N[n_ages,y,h,] * exp(-X$tF[n_ages,y,h,] - X$M[n_ages,y,h,])
   }
-  return(d)
+  #return(d)
 }
 
 #' @title HCR recruitment model
@@ -369,9 +395,9 @@ hcr_operating_model <- function(d, y, h, ctr, Fmult, nR=1) {
 #' @param ctr XXX
 #' 
 hcr_recruitment_model <- function(ssb,cv,ctr) {
-  rec <- switch(ctr$model,
+  rec <- switch(ctr$r_model,
                 recruit1(ssb,ctr$ssb_break,ctr$r_mean,cv),   # Hockey Stick
-                recruit2(ssb,ctr$ssb_break,ctr$rec_mean,cv)) # Bootstrap deviation
+                recruit2(ssb,ctr$ssb_break,ctr$r_mean,cv)) # Bootstrap deviation
   return(rec)
 }
 
@@ -423,54 +449,52 @@ recruit2 <- function (ssb, ssbcut, recmean, rdev) {
 #' 
 #' @export
 #' 
-#' @param d XXX
 #' @param y XXX
 #' @param h XXX
-#' @param hrate The harvest rate (fishing mortality)
 #' @param Fmult XXX
-#' @param delay XXX
-#' @param ass_bias A constant
-#' @param ass_error_type XXX
+#' @param ctr XXX
 
-hcr_observation_error <- function(d, y, h, hrate, Fmult, delay, ass_bias, ass_error_type) {
+
+hcr_observation_error <- function(y, h, Fmult,ctr) {
   
-  assError <- d$assError[ y + delay, h,]
+  hrate <- ctr$HRATE[h]
+  delay <- ctr$delay
   
-  N   <-    d$N[,y + delay, h,]
-  bW  <-   d$bW[,y + delay, h,]
-  sB  <- d$selB[,y + delay, h,]
+  assError <- X$assError[ y + delay, h,]
+  
+  N   <-    X$N[,y + delay, h,]
+  bW  <-   X$bW[,y + delay, h,]
+  sB  <- X$selB[,y + delay, h,]
   bio <- colSums(N * bW * sB)
   
-  sW  <-   d$sW[,y + delay ,h,]
-  xN  <-  d$mat[,y + delay, h,]
-  M   <-    d$M[,y + delay, h,]
-  pF  <-   d$pF[,y + delay, h,]
-  pM  <-   d$pM[,y + delay, h,]
+  sW  <-   X$sW[,y + delay ,h,]
+  xN  <-  X$mat[,y + delay, h,]
+  M   <-    X$M[,y + delay, h,]
+  pF  <-   X$pF[,y + delay, h,]
+  pM  <-   X$pM[,y + delay, h,]
+  selF <- X$selF[, y + delay, h,]
+  selD <- X$selD[, y + delay, h,]
   
-  totalF <- t(Fmult * t(d$selF[, y + delay, h,]))
+  totalF <- t(Fmult * t(selF))
   
-  dF <- t(Fmult * t(d$selD[, y + delay, h,]))
+  dF <- t(Fmult * t(selD))
   
   ssb <- colSums(N * exp( -( pM * M + pF * (totalF + dF))) * xN * sW)
   
-  n_iters <- dim(d$N)[4]
+  n_iters <- ctr$iter
   hrate    <- rep(hrate, n_iters)
-  
-  
-  
-  
-  
+    
   ## A. The assessment error model
-  if (ass_error_type == 1) {
-    bio_hat     <- bio   * ass_bias * exp(assError)
-    ssb_hat     <- ssb   * ass_bias * exp(assError)
-    hrate_hat   <- hrate * ass_bias * exp(assError)
+  if (ctr$a_error == 1) {
+    bio_hat     <- bio   * ctr$a_bias * exp(assError)
+    ssb_hat     <- ssb   * ctr$a_bias * exp(assError)
+    hrate_hat   <- hrate * ctr$a_bias * exp(assError)
   }
   
-  if (ass_error_type == 2) {
-    bio_hat     <- bio   * ass_bias * (1 + assError)
-    ssb_hat     <- ssb   * ass_bias * (1 + assError)
-    hrate_hat   <- hrate * ass_bias * (1 + assError)
+  if (ctr$a_error == 2) {
+    bio_hat     <- bio   * ctr$a_bias * (1 + assError)
+    ssb_hat     <- ssb   * ctr$a_bias * (1 + assError)
+    hrate_hat   <- hrate * ctr$a_bias * (1 + assError)
   }
   
   return(list(hrate=hrate_hat,bio=bio_hat,ssb=ssb_hat))
@@ -565,27 +589,44 @@ hcr_management_fmort <- function(d,y,h,delay,hrate_hat,ssb_hat,Btrigger)
 #' 
 #' @export
 #' 
-#' @param bio_hat vector Observed reference biomass.
-#' @param ssb_hat vector Observed spawning stock biomass.
-#' @param hrate vector Target harvest rate.
-#' @param Btrigger numeric Btrigger of the HCR. The harvest rate is linearily
-#' reduced for spawning biomass below Btrigger. Setting Btrigger to 0 is
-#' equivalent to a HCR where target fishing mortality is constant, irrespective
-#' of spawning stock status.
-#' @param tac_y1 numeric Current year's TAC
-#' @param tac_alpha Weight of current TAC in the HCR. 0 = none, 1 = constant TAC model
+#' @param y XXX
+#' @param h XXX
+#' @param bio vector Observed reference biomass.
+#' @param ssb vector Observed spawning stock biomass.
+#' @param ctr XXX
 #' 
 #' 
 #' @note To do: Modify function so that buffer is not active below Btrigger and
 #' also to a EU type TAC-constraint.
 #' 
-hcr_management_bio <- function(bio_hat,ssb_hat,hrate,Btrigger,tac_y1,tac_alpha)
+hcr_management_bio <- function(y,h,bio,ssb,ctr)
   {
-  i <- ssb_hat < Btrigger  
-  hrate[i] <- hrate[i] * ssb_hat[i]/Btrigger
+  hrate <- rep(ctr$HRATE[h],ctr$iter)
+  Btrigger <- ctr$b_trigger
+  tac_this_year <- X$TAC[y,h,] # This years TAC
   
-  tac_y2 <- hrate * bio_hat
-  tac_y2 <- tac_alpha * tac_y1 + (1 - tac_alpha) * tac_y2
+  i <- ssb < Btrigger
+  hrate[i] <- hrate[i] * ssb[i]/Btrigger
   
-  return(tac_y2)
+  tac_next_year <- hrate * bio  # Next years TAC
+  
+  # Consider buffer
+  tac_next_year <- ctr$h_alpa * tac_this_year + (1 - ctr$h_alpa) * tac_next_year
+  
+  X$TAC[y+1,h,] <<- tac_next_year
+
+}
+
+#' @title XXX
+#' 
+#' @description XXX
+#' 
+#' @export
+#' 
+#' @param X XXX
+hcr_summarise_data <- function(X) {
+  sY <- melt(colSums(X$C * X$cW))
+  sS <- melt(colSums(X$N * exp(- (X$pM + X$pF * X$tF)) * X$sW * X$mat))
+  d <- data.frame(year=sY$year,iter=sY$iter,target=sY$hrate,yield=sY$value,ssb=sS$value)
+  return(d)
 }

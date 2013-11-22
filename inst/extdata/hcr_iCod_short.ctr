@@ -1,0 +1,32 @@
+## Conrol file for Icelandic cod
+0    # a1 - first age
+14   # a2 - last (plus group) age
+2011 # y1 - first year of simulation (normally the assessment year)
+2015 # y2 - last year of simulation
+6    # iter - numer of iterations
+5    # f1 - lower age in fishing mortality calculation
+10   # f2 - upper age in fishing mortality calculation
+1    # nR - number age classes with unknown recruits
+170  # tac_y1 - the TAC in the advisiory year
+180  # tac_y2 - the TAC in the year following the advisory year
+1    # y1Bias - Stock assessment bias in the first year
+0.32 # r_cv - recruitment cv
+0.00 # r_rho - recruitment autocorrelation
+1    # r_model - recruitment model
+128  # r_mean parameter in the ssb-r function
+220  # ssb_break parameter in teh ssb-r function
+0.15 # a_cv assessment cv
+0.45 # a_rho assessment autocorrelation
+1    # a_error assessment error type
+1    # a_bias bias in the assessment
+0.15 # w_cv weight cv
+0.60 # w_rho weight autocorrelation
+2    # w_error weight error type
+1    # w_refB weights used in the reference biomass
+0.5  # h_alfa buffer in the hcr rule
+0    # b_trigger trigger in the hcr rule
+0    # delay 0 if tac-decision based on numbers in the assessment year
+0    # h_number hcr model number
+1    # i_number Implementation model number
+0.0000000001 # b1 beta1 in the implemation error
+1    # b2 in the implementation error

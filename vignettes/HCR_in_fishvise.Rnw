@@ -1,0 +1,170 @@
+\documentclass[a4paper]{article}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,margin=2.5cm}
+
+\usepackage[utf8]{inputenc}
+
+
+\begin{document}
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Some notes on HCR simulation in fishvise}
+
+\title{Some notes on setting up HCR simulations using the fishvise package}
+\author{Einar Hjorleifsson}
+\maketitle
+\newpage{}
+
+<<sessionInfo, results='asis', echo=FALSE>>=
+toLatex(sessionInfo(), locale=FALSE)
+@
+
+<<x, comment='', echo=FALSE>>=
+print('This document was created in knitr')
+@
+\newpage{}
+\tableofcontents{}
+\newpage{}
+
+\section{Preamble}
+some nice stuff
+\section{A quick overview of the operation of the program}
+Here a quick overview is provided on how the functional routines are set up (besides the error structure). The HCR evaluation of the Icelandic cod HCR rule is here taken as an example. The needed input files for that stock are available as part of the fishvise package.
+\begin{enumerate}
+  \item Read in the control file:
+<<quick_start1>>=
+suppressPackageStartupMessages(require(fishvise))
+file <-  paste(path.package("fishvise"),'extdata/hcr_iCod_short.ctr',sep='/')
+ctr <- hcr_read_ctr(file)
+@
+  \item Set the management harvest rate vectors to be tested and add it to the control object:
+<<quick_start2>>=
+HRATE <- c(0.20,0.30)
+ctr$HRATE <- HRATE
+@
+  \item Set up the structure. Creates a long list of array objects stored in an object (list) here named monsterStructure. This contains the nuts and bolts of any HCR evaluation, so the details are provided later in the document (on ToDo-list).
+<<quick_start3>>=
+monsterStructure <- hcr_set_dimensions(ctr)
+@
+  \item Read in the starting year information (details also on the documentation ToDo-list) and pass it, the control file data and the monster structure to hcr\_starting\_conditions function wich will set up a an object in the workspace (working name X) containg needed information for the stock in question to start the HCR-evaluation (also on the documentation ToDo-list).
+<<quick_start3b>>=
+file  <-  paste(path.package("fishvise"),"extdata/hcr_iCod.dat",sep="/")
+dat <- hcr_read_startfile(file)
+hcr_set_starting_conditions(dat, monsterStructure, ctr)
+@
+  \item Here we start the actual evaluation by inititialize the first year. One should think of this as the assessment year (current year). The way that the hcr-evaluation is set up is that the TAC has already been set for the assessment year (effectively set last year based on last years assessment).
+  \begin{enumerate} 
+  \item Given that the TAC in the current year was based on last years assessment that of course includes observation error we need to calculate the realized harvest rate that is assiciated with that decision. We hence start by estimating the mortality multiplier that is associated with the set TAC. This is done using the hcr\_TAC\_to\_Fmult function:
+  \item In the second step we apply the realized mortality to the true stock in numbers. This is often referred to as the operating model, called by the hcr\_operating\_mode function:
+Within the operating model resides a recruitment model to estimate incoming recruits (age 0) in the assessment year. Once the stock in numbers of age zero numbers are available the population is carried though to the end of the year based on the conventional stock equation. On the programming To-Do list is to implement this through the switch function.
+\end{enumerate}
+
+In the actual coding we may have something like the following for the first year:
+
+<<quick_start4>>=
+y <- 1
+for (h in 1:length(HRATE)) {
+  Fmult <- hcr_TAC_to_Fmult(y,h)
+  hcr_operating_model(y, h, ctr, Fmult, nR=1)
+}
+@
+  \item Now for main year loop, starting in the second year. Which one can think of as the current assessment year.  What is done in the fishvise framework is to run all the iterations within a year in one sweep. I.e. we do not have a for-loop. Hence we loop through each management decision mortality within the first year. This is actually what is done in all consequitve steps.
+  \begin{enumerate}
+  \item Modelling implementation error is done in the first step. This model is something that is mentioned in the Bible's but rarely used. In principle the actual removals in forms of catch are set differently than that dictated in the actual HCR. If that is the case one really should question if it is worth while doing a HCR evaluation at all.
+  
+Whatever the case, here a space suggested in the script for adding implementation error model. Here one makes use the switch function of R-base to control the implementation model being run. More on that later. As of now the the hcr\_implementation\_model\_1 is set in the first slot as a dummy.
+
+  \item The second step is the same as used in the first year, i.e. calculation of the realized mortality multiplier relative to the TAC that was set (done last year) using the hcr\_TAC\_to\_Fmult function.
+  
+  \item The third step, the operating model has also been mentioned, i.e. the hcr\_operating\_model function
+
+\item In the fourth step, often referred to as the observation model one adds an error term to the true observation value. This may be any index one can think of to base decision on, such as mortality signals, survey indices, rate of changes etc. Here we have only set up observation error model for Fmort, spwaning stock biomass and reference biomass, this being called by the function hcr\_observation\_error. More on this later in the document (documentation ToDo-list and using switch on the programming ToDo-list).
+  \item The decision model actually contains the HCR rule. Here the decision rule on next years TAC is (or whatever other management measure used to put some contraint on fishing mortality) is implemented. Of course based on the values from the observation model.
+  \begin{enumerate}
+  \item A space for a rule that is not implemented. This space is left for those that think one can hit the target F each and every year. So awaits some ingenuity ...
+  \item The conventional ICES F-based rules, by function hcr\_management\_fmort (not implemented yet):
+  \item The conventional Icelandic biomass-based rules, by function hcr\_management\_bio.
+\end{enumerate}
+\end{enumerate}
+
+The code may look something like this:
+<<quick_start5, tidy=FALSE>>=
+for (h in 1:length(HRATE)) {
+  for(y in 2:(ctr$y2 - ctr$y1)) {
+    
+    switch(ctr$i_number,
+           dummy <- hcr_implementation_model_1(),
+           stop("implementation model 2 is available for developement"),
+           stop(" and whatever more ..."))
+    
+    Fmult <- hcr_TAC_to_Fmult(y, h)
+    hcr_operating_model(y, h, ctr, Fmult, nR=1)
+
+    hat <- hcr_observation_error(y,h,Fmult,ctr)
+
+    switch(ctr$h_number,
+           stop("Not implemented year"),
+           stop("hcr_management_fmort(hat$,hat$ssb,ctr)"),
+           hcr_management_bio(y,h,hat$bio,hat$ssb,ctr))
+    
+  }
+}
+@
+  \item Now update the final year. Here we only do the same as the first year, i.e. calculate the stock in numbers to the end of the final year in the simulation.
+<<quick_start6>>=
+y <- ctr$y2 - ctr$y1 + 1 
+for (h in 1:length(HRATE)) {
+  Fmult <- hcr_TAC_to_Fmult(y,h)
+  hcr_operating_model(y, h, ctr, Fmult, nR=1)
+}
+@
+\end{enumerate}
+
+The result data for now resides in an object in the working directory called (for now) X. This is a list containing arrays of various elements. To just obtain estimates of catches one can simply do:
+<<resultsDemo>>=
+dat <- hcr_summarise_data(X)
+head(dat)
+@
+Lets stop for now with this. In the next two pages some plots are provided of output based on the exactly the code above.
+
+<<plot01, echo=FALSE>>=
+i90 <- function(x, ...) {
+    qs <- quantile(as.numeric(x), probs = c(0.05, 0.95), na.rm = TRUE)
+    names(qs) <- c("ymin","ymax")
+    qs
+}
+i80 <- function(x, ...) {
+  qs <- quantile(as.numeric(x), probs = c(0.10, 0.90), na.rm = TRUE)
+    names(qs) <- c("ymin","ymax")
+    qs
+}
+i50 <- function(x, ...) {
+  qs <- quantile(as.numeric(x), probs = c(0.25, 0.75), na.rm = TRUE)
+    names(qs) <- c("ymin","ymax")
+    qs
+}
+@
+\newpage{}
+And out of this one can plot the illusive MSY (details provided later) and think about the appropriate fishing mortality to be used in the advisory context:
+<<yieldplot, tidy=FALSE>>=
+ggplot(hcr_iCod,aes(target,yield)) + 
+  stat_summary(fun.data = i90, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.data = i80, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.data = i50, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.y = median, colour = "red", geom="line") +
+  stat_summary(fun.y = mean, colour = "blue", geom="line") +
+  coord_cartesian(xlim=c(0.15,0.36))
+@
+\newpage{}
+If one is concerned with the 5th percentile vs some biomass reference value one has SSB profile:
+<<ssbplot, tidy=FALSE>>=
+ggplot(hcr_iCod,aes(target,ssb)) + 
+  stat_summary(fun.data = i90, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.data = i80, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.data = i50, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.y = median, colour = "red", geom="line") +
+  stat_summary(fun.y = mean, colour = "blue", geom="line") +
+  geom_hline(yintercept = 220) +
+  coord_cartesian(xlim=c(0.15,0.36),ylim=c(0,1000))
+@
+
+\end{document}
