@@ -273,7 +273,7 @@ hcr_set_starting_conditions <- function(dat_y1, d, ctr)
 
 
 
-#' @title TAC2Fmult
+#' @title hcr_TAC_to_Fmult
 #' 
 #' @description XXX
 #' 
@@ -312,6 +312,11 @@ hcr_TAC_to_Fmult <- function(y,h) {
   Fmult <- ifelse(Fmult < 0, 0, Fmult)
   return(Fmult)
 }
+
+
+
+
+
 
 #' @title Add implementation error to TAC
 #' 
@@ -626,6 +631,15 @@ hcr_management_bio <- function(y,h,bio,ssb,ctr)
 hcr_summarise_data <- function(X) {
   sY <- melt(colSums(X$C * X$cW))
   sS <- melt(colSums(X$N * exp(- (X$pM + X$pF * X$tF)) * X$sW * X$mat))
-  d <- data.frame(year=sY$year,iter=sY$iter,target=sY$hrate,yield=sY$value,ssb=sS$value)
+  sB <- melt(colSums(X$N * X$bW * X$selB))
+  R <- melt(drop(X$N[1,,,]))
+  Fbar <- melt(colMeans(X$tF[(ctr$f1+1):(ctr$f2+1),,,]))
+  d <- data.frame(year=sY$year,iter=sY$iter,target=sY$hrate,
+                  r=R$value,
+                  bio=sB$value,
+                  ssb=sS$value,
+                  tF=Fbar$value,
+                  hr=sY$value/sB$value,
+                  yield=sY$value)
   return(d)
 }

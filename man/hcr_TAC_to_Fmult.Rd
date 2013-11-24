@@ -1,6 +1,6 @@
 \name{hcr_TAC_to_Fmult}
 \alias{hcr_TAC_to_Fmult}
-\title{TAC2Fmult}
+\title{hcr_TAC_to_Fmult}
 \usage{
   hcr_TAC_to_Fmult(y, h)
 }

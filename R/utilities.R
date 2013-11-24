@@ -199,3 +199,41 @@ calc.quantiles <- function(d, d.det, variable="variable") {
   return(x)
 }
 
+#' @title Calculate quantiles
+#' 
+#' @description XXX
+#' 
+#' @export 
+#' 
+#' @param x XXX
+i90 <- function(x, ...) {
+  qs <- quantile(as.numeric(x), probs = c(0.05, 0.95), na.rm = TRUE)
+  names(qs) <- c("ymin","ymax")
+  return(qs)
+}
+
+#' @title Calculate quantiles
+#' 
+#' @description XXX
+#' 
+#' @export 
+#' 
+#' @param x XXX
+i80 <- function(x, ...) {
+  qs <- quantile(as.numeric(x), probs = c(0.10, 0.90), na.rm = TRUE)
+  names(qs) <- c("ymin","ymax")
+  return(qs)
+}
+
+#' @title Calculate quantiles
+#' 
+#' @description XXX
+#' 
+#' @export 
+#' 
+#' @param x XXX
+i50 <- function(x, ...) {
+  qs <- quantile(as.numeric(x), probs = c(0.25, 0.75), na.rm = TRUE)
+  names(qs) <- c("ymin","ymax")
+  return(qs)
+}

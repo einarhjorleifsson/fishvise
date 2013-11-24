@@ -124,25 +124,35 @@ The result data for now resides in an object in the working directory called (fo
 dat <- hcr_summarise_data(X)
 head(dat)
 @
+
+<<resultDemoPlots>>=
+i <- dat$target %in% c(0.20)
+d <- melt(dat[i,],c("year","iter","target"))
+ggplot(d,aes(year,value)) + 
+  stat_summary(fun.data = i90, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.data = i80, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.data = i50, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.y = median, colour = "red", geom="line") +
+  stat_summary(fun.y = mean, colour = "blue", geom="line") +
+  facet_grid(variable ~ target, scale="free_y")
+@
+
+
+<<resultDemoPlots2>>=
+i <- dat$target %in% c(0.30)
+d <- melt(dat[i,],c("year","iter","target"))
+ggplot(d,aes(year,value)) + 
+  stat_summary(fun.data = i90, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.data = i80, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.data = i50, fill = "red", geom="ribbon", alpha=0.2) +
+  stat_summary(fun.y = median, colour = "red", geom="line") +
+  stat_summary(fun.y = mean, colour = "blue", geom="line") +
+  facet_grid(variable ~ target, scale="free_y")
+@
+
 Lets stop for now with this. In the next two pages some plots are provided of output based on the exactly the code above.
 
-<<plot01, echo=FALSE>>=
-i90 <- function(x, ...) {
-    qs <- quantile(as.numeric(x), probs = c(0.05, 0.95), na.rm = TRUE)
-    names(qs) <- c("ymin","ymax")
-    qs
-}
-i80 <- function(x, ...) {
-  qs <- quantile(as.numeric(x), probs = c(0.10, 0.90), na.rm = TRUE)
-    names(qs) <- c("ymin","ymax")
-    qs
-}
-i50 <- function(x, ...) {
-  qs <- quantile(as.numeric(x), probs = c(0.25, 0.75), na.rm = TRUE)
-    names(qs) <- c("ymin","ymax")
-    qs
-}
-@
+
 \newpage{}
 And out of this one can plot the illusive MSY (details provided later) and think about the appropriate fishing mortality to be used in the advisory context:
 <<yieldplot, tidy=FALSE>>=

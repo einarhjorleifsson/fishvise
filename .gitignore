@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+R_fpress/
+R_survey/
+setup/
+trash/
+.Rbuildignore
+fishvise.Rproj
