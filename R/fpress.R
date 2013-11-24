@@ -108,13 +108,13 @@ hcr_set_assErrors <- function(d,ctr)
   
   # take a subset of samples, ensures that there is potential a bias
   # in the assessment year (does not matter if looking at long term
-  # equilibrium)
+  # equilibrium). This this is not an issue, can ignore coding like this.
   
-  k <- 100:(n_years + 1000 - 100)    # ignore the 1st 100
-  firstSample <- sample(k,1)
-  lastSample  <- firstSample + n_years -1
-  x <- x[firstSample:lastSample,]
-  for (i in 1:n_hrates) d[,i,] <- x
+  # k <- 100:(n_years + 1000 - 100)    # ignore the 1st 100
+  # firstSample <- sample(k,1)
+  # lastSample  <- firstSample + n_years -1
+  # x <- x[firstSample:lastSample,]
+  # for (i in 1:n_hrates) d[,i,] <- x
   
   # CHECK THIS:
   ## ad hoc error setup in the 1st year, fixed for iCod age range
@@ -147,6 +147,7 @@ hcr_set_wgtErrors <- function(d,ctr)
   
   for (y in 2:n_years) x[y,] <- ctr$w_rho * x[y-1,] + sqrt(1 - ctr$w_rho^2) * x[y,]
   x <- ctr$w_cv * x
+  
   for (a in 1:n_ages) {
     for (h in 1:n_hrates) d[a,,h,] <- x
   }
@@ -231,7 +232,6 @@ hcr_read_startfile <- function(file) {
 hcr_set_starting_conditions <- function(dat_y1, d, ctr) 
   {
   
-
   d$N[,1,,]   <- dat_y1$N
   d$sW[,,,]   <- dat_y1$sW   # spawning weight (kg)
   d$cW[,,,]   <- dat_y1$cW   # catch weight (kg)
@@ -246,9 +246,8 @@ hcr_set_starting_conditions <- function(dat_y1, d, ctr)
   n_ages <- length(dat_y1$age)
   n_noRec <- sum(dat_y1$N == 0)
   ## ad hoc error setup in the 1st year
-  d$N[(n_noRec+1):n_ages,1,,] <- (1 / ctr$y1Bias) * d$N[(n_noRec+1):n_ages] * rep(exp(d$assError[1,,]),n_ages-1)
-  
-  
+  #d$N[(n_noRec+1):n_ages,1,,] <- (1 / ctr$y1Bias) * d$N[(n_noRec+1):n_ages] * rep(exp(d$assError[1,,]),n_ages-1)
+    
   d$TAC[1,,]  <- ctr$tac_y1 # Already set TAC in the assessment year (year 1)
   d$TAC[2,,]  <- ctr$tac_y2 # Already set TAC in the advisory year (year 2)
   
@@ -259,8 +258,8 @@ hcr_set_starting_conditions <- function(dat_y1, d, ctr)
   }
   
   if(ctr$w_error == 2) {
-    d$cW[,2:n_years,,] <- d$cW[,2:n_years,,] * (1+d$cvcW[,2:n_years,,])
-    d$sW[,2:n_years,,] <- d$sW[,2:n_years,,] * (1+d$cvsW[,2:n_years,,])
+    d$cW[,2:n_years,,] <- d$cW[,2:n_years,,] * (1 + d$cvcW[,2:n_years,,])
+    d$sW[,2:n_years,,] <- d$sW[,2:n_years,,] * (1 + d$cvsW[,2:n_years,,])
   }
   
   if(ctr$w_refB == 0) d$bW <- d$sW   # use stock weights to calculate ref bio
@@ -285,9 +284,9 @@ hcr_set_starting_conditions <- function(dat_y1, d, ctr)
 #' 
 hcr_TAC_to_Fmult <- function(y,h) {
 
-  TAC <- X$TAC[y,h,]
+  TAC <-  X$TAC[y,h,]
   Na  <-  X$N[,y,h,]
-  Sa  <-   X$selF[,y,h,]
+  Sa  <-  X$selF[,y,h,]
   Da  <-  X$selD[,y,h,]
   Ma  <-  X$M[,y,h,]
   Wa  <-  X$cW[,y,h,]

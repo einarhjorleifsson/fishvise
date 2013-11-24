@@ -33,12 +33,12 @@ Here a quick overview is provided on how the functional routines are set up (bes
   \item Read in the control file:
 <<quick_start1>>=
 suppressPackageStartupMessages(require(fishvise))
-file <-  paste(path.package("fishvise"),'extdata/hcr_iCod_short.ctr',sep='/')
+file <-  paste(path.package("fishvise"),'extdata/hcr_iCod.ctr',sep='/')
 ctr <- hcr_read_ctr(file)
 @
-  \item Set the management harvest rate vectors to be tested and add it to the control object:
+  \item Set the sweep of management harvest rate vectors. For a demonstration because of consideration of speed only run a 0, 10, 20 and 30\% rule is setup. Besides creating the vector of management harvest rate vectors one needs to pass it to the control file (that was read in the last chunk of code).
 <<quick_start2>>=
-HRATE <- c(0.20,0.30)
+HRATE <- c(0.00001, 0.10, 0.20, 0.30)
 ctr$HRATE <- HRATE
 @
   \item Set up the structure. Creates a long list of array objects stored in an object (list) here named monsterStructure. This contains the nuts and bolts of any HCR evaluation, so the details are provided later in the document (on ToDo-list).
@@ -166,5 +166,45 @@ ggplot(hcr_iCod,aes(target,ssb)) +
   geom_hline(yintercept = 220) +
   coord_cartesian(xlim=c(0.15,0.36),ylim=c(0,1000))
 @
+
+\section{On coding error structures}
+
+In the current version error structures are only available for recruitement, weights at age and assessment error. For those, the error structure can be either normal og lognormal. All provide a switch option to include autocorrelation, something that one should consider as default for all stocks unless proven to be of pure random nature.
+
+Since no stock dependency is assumed/allowed in the current version all the error structure can be set up in the initialization process. The following example illustrates how the error code is set up in the fishvise code, an example were the 
+<<white_noise>>=
+n_years  <- 50
+cv <- 0.15
+rho <- 0.60
+
+x1 <- rnorm(n_years)
+x2 <- x1
+for (y in 2:n_years) {
+  x2[y] <- rho * x2[y-1] + sqrt(1 - rho^2) * x2[y]
+}
+x1 <- x1 * cv
+x2 <- x2 * cv
+
+cW <- rep(6,n_years)
+d <- data.frame(Year=c(1:n_years),
+                whiteW = cW * (1 + x1),
+                autocW = cW * (1 + x2))
+d2 <- melt(d,id.vars="Year")
+ggplot(d2,aes(Year,value,colour=variable)) + geom_point() + geom_line() +
+  geom_hline(yintercept=cW) + scale_colour_brewer(palette="Set1")
+
+y1 <- 2013
+y2 <- 2017
+n_years <- y2 - y1 + 1
+a1 <- 4
+a2 <- 10
+n_ages <- a2 - a1 + 1
+x <- array(NA,dim=c(n_ages,n_years),
+             dimnames=list(age=a1:a2,
+                           year=y1:y2))
+x[1,] <- 3.5
+@
+
+
 
 \end{document}

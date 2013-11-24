@@ -2,8 +2,8 @@
 0    # a1 - first age
 14   # a2 - last (plus group) age
 2011 # y1 - first year of simulation (normally the assessment year)
-2040 # y2 - last year of simulation
-1000 # iter - numer of iterations
+2050 # y2 - last year of simulation
+1000    # iter - numer of iterations
 5    # f1 - lower age in fishing mortality calculation
 10   # f2 - upper age in fishing mortality calculation
 1    # nR - number age classes with unknown recruits
@@ -26,6 +26,7 @@
 0.5  # h_alfa buffer in the hcr rule
 0    # b_trigger trigger in the hcr rule
 0    # delay 0 if tac-decision based on numbers in the assessment year
-0    # h_number hcr model number
+3    # h_number hcr model number
+1    # i_number Implementation model number
 0.0000000001 # b1 beta1 in the implemation error
 1    # b2 in the implementation error
