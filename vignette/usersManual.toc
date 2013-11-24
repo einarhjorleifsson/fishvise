@@ -1,2 +1,0 @@
-\contentsline {section}{\numberline {1}Preamble}{4}
-\contentsline {section}{\numberline {2}A quick start}{4}
