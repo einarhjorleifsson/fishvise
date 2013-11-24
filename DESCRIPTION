@@ -7,12 +7,12 @@ Description: More about what it does (maybe more than one line)
 VignetteBuilder: knitr
 Depends:
     plyr,
-    FLCore,
     stringr,
     reshape2,
     ggplot2
 Suggests:
-    knitr
+    knitr,
+    FLCore
 LazyData: yes
 Author: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 Maintainer: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>

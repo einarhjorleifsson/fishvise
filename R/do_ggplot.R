@@ -6,9 +6,6 @@
 #' 
 #' @param x xx
 #' @param d xx
-#' 
-#' @param x xx
-#' @param d xx
 #' @export 
 
 do.ggplot <- function(x,d) {
