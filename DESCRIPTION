@@ -12,7 +12,8 @@ Depends:
     ggplot2
 Suggests:
     knitr,
-    FLCore
+    FLCore,
+    RSQLite
 LazyData: yes
 Author: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 Maintainer: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
@@ -25,3 +26,5 @@ Collate:
     'do_ggplot.R'
     'srmsymc.R'
     'fpress.R'
+    'multibeam.R'
+    'utilities_geo.R'

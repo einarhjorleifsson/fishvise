@@ -6,6 +6,8 @@
 }
 \arguments{
   \item{x}{XXX}
+
+  \item{...}{additional stuff}
 }
 \description{
   XXX

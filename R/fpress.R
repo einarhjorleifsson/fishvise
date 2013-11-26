@@ -100,8 +100,8 @@ hcr_set_assErrors <- function(d,ctr)
   n_hrates <- dim(d)[2]
   n_iters  <- dim(d)[3]
 
-  x <- array(rnorm(n_years + 1000 * n_iters),
-             dim=c(n_years + 1000,  n_iters))
+  x <- array(rnorm(n_years  * n_iters),
+             dim=c(n_years ,  n_iters))
 
   for (i in 2:n_years) x[i,] <- ctr$a_rho * x[i-1,] + sqrt(1-ctr$a_rho^2) * x[i,]
   x <- ctr$a_cv * x
@@ -114,7 +114,7 @@ hcr_set_assErrors <- function(d,ctr)
   # firstSample <- sample(k,1)
   # lastSample  <- firstSample + n_years -1
   # x <- x[firstSample:lastSample,]
-  # for (i in 1:n_hrates) d[,i,] <- x
+  for (h in 1:n_hrates) d[,h,] <- x
   
   # CHECK THIS:
   ## ad hoc error setup in the 1st year, fixed for iCod age range
@@ -177,6 +177,7 @@ hcr_set_recErrors <- function(d,ctr)
              dim=c(n_years , n_iters))
   
   for (y in 2:n_years) x[y,] <- ctr$r_rho * x[y-1,] + sqrt(1 - ctr$r_rho^2) * x[y,]
+  
   x <- exp(x*ctr$r_cv)
   for (h in 1:n_hrates) d[,h,] <- x
   

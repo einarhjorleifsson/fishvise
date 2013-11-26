@@ -1,0 +1,13 @@
+\name{sr2lim}
+\alias{sr2lim}
+\title{Set the limits for small statistical squares}
+\usage{
+  sr2lim(sr)
+}
+\arguments{
+  \item{sr}{The small statistical square}
+}
+\description{
+  May not be of any bloody use
+}
+

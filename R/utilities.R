@@ -206,6 +206,7 @@ calc.quantiles <- function(d, d.det, variable="variable") {
 #' @export 
 #' 
 #' @param x XXX
+#' @param ... additional stuff
 i90 <- function(x, ...) {
   qs <- quantile(as.numeric(x), probs = c(0.05, 0.95), na.rm = TRUE)
   names(qs) <- c("ymin","ymax")
@@ -219,6 +220,7 @@ i90 <- function(x, ...) {
 #' @export 
 #' 
 #' @param x XXX
+#' @param ... additional stuff
 i80 <- function(x, ...) {
   qs <- quantile(as.numeric(x), probs = c(0.10, 0.90), na.rm = TRUE)
   names(qs) <- c("ymin","ymax")
@@ -232,8 +234,10 @@ i80 <- function(x, ...) {
 #' @export 
 #' 
 #' @param x XXX
+#' @param ... additional stuff
 i50 <- function(x, ...) {
   qs <- quantile(as.numeric(x), probs = c(0.25, 0.75), na.rm = TRUE)
   names(qs) <- c("ymin","ymax")
   return(qs)
 }
+

@@ -416,9 +416,6 @@ rvk2flr <- function(rbx, sName="nn", sDesc="none",pf=0,pm=0,cF1=5,cF2=10) {
   return(x)
 }
 
-
-
-
 #' @title sen from rbya
 #' 
 #' @description XXX
@@ -475,3 +472,54 @@ sen_from_rbya <- function(x) {
   
   cat_age.dat("age.dat",1,0,0,sel,cvsel,wgt,cvwgt,bio,cvbio) 
 }
+
+# Stuff from the surbar package
+
+
+#' @title Read in Lowestoft-format VPA data
+#' 
+#' @export
+#' @param filename The name of the file to read in
+read.lowestoft <- function(filename)
+{
+  y <- scan(filename, skip = 2, nlines = 1, quiet = TRUE)
+  a <- scan(filename, skip = 3, nlines = 1, quiet = TRUE)
+  table <- read.delim(filename, header = FALSE, sep = "", skip = 5)
+  list(y = y, a = a, tab = table)
+}
+
+
+#' @title Read in Lowestoft-format survey data
+#' 
+#' @export
+#' @param filename The name of the file to read in
+read.lowestoft.survey <- function(filename)
+{
+  n <- scan(filename, skip = 1, nlines = 1, quiet = TRUE) - 100
+  idx <- vector("list", length = n)
+  start <- 3
+  for (k in 1:n)
+  {
+    idx[[k]]$name <- paste(scan(filename, skip = start - 1, nlines = 1, 
+                                      what = character(0), quiet = TRUE), collapse = " ")
+    temp <- scan(filename, skip = start, nlines = 1, quiet = TRUE)
+    idx[[k]]$y1 <- temp[1]
+    idx[[k]]$y2 <- temp[2]
+    idx[[k]]$ny <- temp[2] - temp[1] + 1
+    temp <- scan(filename, skip = start + 1, nlines = 1, quiet = TRUE)
+    idx[[k]]$rho <- 0.5 * (temp[4] + temp[3])
+    temp <- scan(filename, skip = start + 2, nlines = 1, quiet = TRUE)
+    idx[[k]]$a1 <- temp[1]
+    idx[[k]]$a2 <- temp[2]
+    idx[[k]]$na <- temp[2] - temp[1] + 1
+    idx[[k]]$tab <- read.table(filename, skip = start + 3, nrows = idx[[k]]$ny)
+    temp <- idx[[k]]$tab[,2:(idx[[k]]$na + 1)] 
+    effort <- idx[[k]]$tab[,1] 
+    idx[[k]]$tab <- data.frame(temp / effort)
+    names(idx[[k]]$tab) <- idx[[k]]$a1:idx[[k]]$a2
+    rownames(idx[[k]]$tab) <- idx[[k]]$y1:idx[[k]]$y2
+    start <- start + 4 + idx[[k]]$ny
+  }
+  list(n = n, idx = idx)
+}
+

@@ -38,7 +38,7 @@ ctr <- hcr_read_ctr(file)
 @
   \item Set the sweep of management harvest rate vectors. For a demonstration because of consideration of speed only run a 0, 10, 20 and 30\% rule is setup. Besides creating the vector of management harvest rate vectors one needs to pass it to the control file (that was read in the last chunk of code).
 <<quick_start2>>=
-HRATE <- c(0.00001, 0.10, 0.20, 0.30)
+HRATE <- c(0.00001, 0.10, 0.20, 0.25)
 ctr$HRATE <- HRATE
 @
   \item Set up the structure. Creates a long list of array objects stored in an object (list) here named monsterStructure. This contains the nuts and bolts of any HCR evaluation, so the details are provided later in the document (on ToDo-list).
@@ -125,6 +125,7 @@ dat <- hcr_summarise_data(X)
 head(dat)
 @
 
+\newpage{}
 <<resultDemoPlots>>=
 i <- dat$target %in% c(0.20)
 d <- melt(dat[i,],c("year","iter","target"))
@@ -134,12 +135,12 @@ ggplot(d,aes(year,value)) +
   stat_summary(fun.data = i50, fill = "red", geom="ribbon", alpha=0.2) +
   stat_summary(fun.y = median, colour = "red", geom="line") +
   stat_summary(fun.y = mean, colour = "blue", geom="line") +
-  facet_grid(variable ~ target, scale="free_y")
+  facet_wrap( ~ variable, scale="free_y")
 @
 
-
+\newpage{}
 <<resultDemoPlots2>>=
-i <- dat$target %in% c(0.30)
+i <- dat$target %in% c(0.25)
 d <- melt(dat[i,],c("year","iter","target"))
 ggplot(d,aes(year,value)) + 
   stat_summary(fun.data = i90, fill = "red", geom="ribbon", alpha=0.2) +
@@ -147,7 +148,7 @@ ggplot(d,aes(year,value)) +
   stat_summary(fun.data = i50, fill = "red", geom="ribbon", alpha=0.2) +
   stat_summary(fun.y = median, colour = "red", geom="line") +
   stat_summary(fun.y = mean, colour = "blue", geom="line") +
-  facet_grid(variable ~ target, scale="free_y")
+  facet_wrap( ~ variable, scale="free_y")
 @
 
 Lets stop for now with this. In the next two pages some plots are provided of output based on the exactly the code above.
@@ -202,17 +203,6 @@ d <- data.frame(Year=c(1:n_years),
 d2 <- melt(d,id.vars="Year")
 ggplot(d2,aes(Year,value,colour=variable)) + geom_point() + geom_line() +
   geom_hline(yintercept=cW) + scale_colour_brewer(palette="Set1")
-
-y1 <- 2013
-y2 <- 2017
-n_years <- y2 - y1 + 1
-a1 <- 4
-a2 <- 10
-n_ages <- a2 - a1 + 1
-x <- array(NA,dim=c(n_ages,n_years),
-             dimnames=list(age=a1:a2,
-                           year=y1:y2))
-x[1,] <- 3.5
 @
 
 

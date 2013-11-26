@@ -3,6 +3,7 @@
 .RData
 R_fpress/
 R_survey/
+R_msy/
 setup/
 trash/
 .Rbuildignore
