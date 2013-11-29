@@ -68,12 +68,10 @@ read.rby <- function (file,
                       info=FALSE,
                       name_stock = NA, yAss = NA,aR = NA,aF =c(NA,NA),Run =NA,Model = NA) {
   
+  
+  
   # 1. file exist check
-  if(format == "rvk") {
-    if(!str_detect(file,"resultsbyyear"))  {
-      file <- paste(file,"resultsbyyear",sep="/")
-    }
-  }
+  
   if(!file.exists(file)) stop(paste("file",file,"not found"))
   
   # 2.a Read "rvk" format
@@ -172,12 +170,8 @@ read.rbya <- function (file,
                       Run =NA,Model = NA) {
   
   # 1. file exist check
-  if(format == "rvk") {
-    if(!str_detect(file,"resultsbyyearandage"))  {
-      file <- paste(file,"resultsbyyearandage",sep="/")
-    }
-  }
   if(!file.exists(file)) stop(paste("file",file,"not found"))
+  
   
   # 2.a Read "rvk" format
   if(format == "rvk") {
@@ -480,12 +474,19 @@ sen_from_rbya <- function(x) {
 #' 
 #' @export
 #' @param filename The name of the file to read in
-read.lowestoft <- function(filename)
+#' @param Format The format of the output, available is "List","Wide","Long"
+read.lowestoft <- function(filename, Format="List")
 {
   y <- scan(filename, skip = 2, nlines = 1, quiet = TRUE)
   a <- scan(filename, skip = 3, nlines = 1, quiet = TRUE)
-  table <- read.delim(filename, header = FALSE, sep = "", skip = 5)
-  list(y = y, a = a, tab = table)
+  tab <- read.delim(filename, header = FALSE, sep = "", skip = 5)
+  names(tab) <- c(a[1]:a[2])
+  rownames(tab) <- c(y[1]:y[2])
+  if(Format == "List") return(list(y = y, a = a, tab = tab))
+  if(Format == "Wide") return(tab)
+  tab$year <- rownames(tab)
+  tab <- melt(tab,id.vars="year")
+  return(tab)
 }
 
 

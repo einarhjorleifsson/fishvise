@@ -8,7 +8,7 @@ NULL
 
 #' @name hcr_iCod
 #' @title XX
-#' @description A \emph{list} column matching keys
+#' @description XXX
 #' @docType data
 #' @usage Some usage
 #' @author Einar Hjorleifsson

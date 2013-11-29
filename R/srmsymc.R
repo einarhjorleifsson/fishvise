@@ -265,6 +265,8 @@ recruitment = function(SSB, alpha, beta, sr)
 #' 
 #' @author Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 #' @param sr integer. containg the stock-recruitment model
+#' @param opt_sen XXX
+#' @param opt_pen XXX
 #' @param nits Number of iterations of bootstrapping - if 0, does only the deterministic fit
 #' @param path characters. Name of the directory for storing the output. If
 #' missing, the output remains in the working directory.
@@ -272,7 +274,7 @@ recruitment = function(SSB, alpha, beta, sr)
 
 #' @export
 
-run.srmsymc <- function(sr,nits=100,path,output=FALSE) {
+run.srmsymc <- function(sr,opt_sen=1,opt_pen=1,nits=100,path,output=FALSE) {
   
   # srmsymc and srmsymc2 does not exists
   if (!file.exists('srmsymc')) { #stop('The srmsymc program must be in the working directory')
@@ -285,10 +287,18 @@ run.srmsymc <- function(sr,nits=100,path,output=FALSE) {
   }
   
   if (!file.exists('srmsymc.dat')) stop('The srmsymc.dat file must be in the working directory')
-  # Set the correct recruitment number
+  
+  # Update the recruitment number
   x <- readLines("srmsymc.dat")
   i <- grep("# Ropt:   S-R function type",x)
   x[i] <- paste(sr,"  # Ropt:   S-R function type")
+
+  
+  i <- grep("# senopt", x)
+  x[i] <- paste(opt_sen,"# senopt")
+  i <- grep("# penopt", x)
+  x[i] <- paste(opt_pen,"# penopt")
+  
   write(x,file="srmsymc.dat")
   
   # get the name of the age data file
@@ -344,10 +354,11 @@ read.srmsymc <- function(path, ...) {
 #' when installing.
 #' @export
 compile.srmsymc <- function(clean=TRUE) {
-  file2copy <- paste(path.package("msy"), "extdata/srmsymc.tpl", sep='/')
+
+  file2copy <- system.file("extdata","srmsymc.tpl",package="fishvise")
   cmd <- paste("cp", file2copy, ".")
   system(cmd)
-  file2copy <- paste(path.package("msy"), "extdata/srmsymc2.tpl", sep='/')
+  file2copy <- system.file("extdata","srmsymc2.tpl",package="fishvise")
   cmd <- paste("cp", file2copy, ".")
   system(cmd)
   system("admb srmsymc")
@@ -505,10 +516,12 @@ read.mc.ypr <- function(file="simparypr.dat",trim=TRUE,longformat=TRUE,doPlot=TR
 #' age-based-data. If missing, set to "age.dat".
 #' @param aP \emph{integer}. Plus group age.
 #' @param years vector containing years to include in the ssb-r
+#' @param align_recruitment XXX
+
 
 write.srmsymc <- function(rby,iba,aR,col_names=c("year","r","ssb"),opt_sr_model=1,
                           opt_sim=1,opt_pen=1,opt_age=1,rba,
-                          filename_age="age.dat",aP,years) {
+                          filename_age="age.dat",aP,years, align_rectruitment=TRUE) {
   
   value <- NULL
   
@@ -539,8 +552,10 @@ write.srmsymc <- function(rby,iba,aR,col_names=c("year","r","ssb"),opt_sr_model=
   if(is.na(aR)) stop("Recruitment age (aR) must be specified")
   
   ## Align recruitment
-  x <- align_ssb_r(x,col.names=names(x),aR)
-  x <- x[!is.na(x$r),]
+  if(align_rectruitment == TRUE) {
+    x <- align_ssb_r(x,col.names=names(x),aR)
+    x <- x[!is.na(x$r),]
+  }
   
   if(missing(years)) {
     y1 <- y$time[1]
@@ -587,7 +602,7 @@ write.srmsymc <- function(rby,iba,aR,col_names=c("year","r","ssb"),opt_sr_model=
       cvsel[,i] <- x1[,'cv']
       x1 <- x[x$id %in% weight_names[i],]
       wgt[,i] <- x1[,"value"]
-      cvwgt[,i] <- x1[,"value"]
+      cvwgt[,i] <- x1[,"cv"]
     }
     bio <- cvbio <- matrix(NA,nrow=length(ages),ncol=3)
     bio[,1]   <- x[x$id %in% 'M','value']
@@ -600,11 +615,15 @@ write.srmsymc <- function(rby,iba,aR,col_names=c("year","r","ssb"),opt_sr_model=
     iba <- list(sel=sel,sel_cv=cvsel,w=wgt,w_cv=cvwgt,bio=bio,bio_cv=cvbio,info=y)
   }
   
-  if(iba$info$creator == "fishvise::read.rby") {
+  if(iba$info$creator == "fishvise::read.rbya") {
     
     x <- iba$data[,c("year","age","tF","wC","wX","xN")]
-        
-    tF <- ddply(x[x$age %in% 5:10,],"year",summarise,refF=mean(tF))
+    x$tF[is.na(x$tF)] <- 0
+    x$wC[is.na(x$wC)] <- 0
+    x$wX[is.na(x$wX)] <- 0
+    x$xN[is.na(x$xN)] <- 0
+    ctr <- iba$info
+    tF <- ddply(x[x$age %in% ctr$mort[1,1]:ctr$mort[2,1],],"year",summarise,refF=mean(tF))
     x <- join(x,tF)
     x$sF <- x$tF/x$refF
     
@@ -612,16 +631,16 @@ write.srmsymc <- function(rby,iba,aR,col_names=c("year","r","ssb"),opt_sr_model=
     d <- ddply(d,c("variable","age"),summarise,ave=mean(value,na.rm=T),cv=sqrt(var(value,na.rm=T))/ave)
     
     nFleets <- 1
-    fleet_Fs <- matrix(c(5,10),ncol=1,nrow=2)
+    fleet_Fs <- matrix(c(ctr$mort[1,1],ctr$mort[2,1]),ncol=1,nrow=2)
     colnames(fleet_Fs) <- "sF"
     fleet_Fs_names <- colnames(fleet_Fs)
     weight_names <- "wC"
     
     ages <- c(min(x$age):max(x$age))
-    cat("Line 621")
-    sel <- cvsel <- wgt <- cvwgt <- matrix(NA,nrow=length(ages),ncol=nFleets)
+    sel <- cvsel <- wgt <- cvwgt <- matrix(0,nrow=length(ages),ncol=nFleets)
     x <- d
     names(x) <- c("id","age","value","cv")
+    x$cv[is.na(x$cv)] <- 0
     for (i in 1:nFleets) {
       x1 <- x[x$id %in% fleet_Fs_names[i],]
       x1$value <- x1$value/mean(x1$value[x1$age %in% c(fleet_Fs[1,i]:fleet_Fs[2,i])])
@@ -629,9 +648,9 @@ write.srmsymc <- function(rby,iba,aR,col_names=c("year","r","ssb"),opt_sr_model=
       cvsel[,i] <- x1[,'cv']
       x1 <- x[x$id %in% weight_names[i],]
       wgt[,i] <- x1[,"value"]
-      cvwgt[,i] <- x1[,"value"]
+      cvwgt[,i] <- x1[,"cv"]
     }
-    bio <- cvbio <- matrix(NA,nrow=length(ages),ncol=3)
+    bio <- cvbio <- matrix(0,nrow=length(ages),ncol=3)
     bio[,1]   <- 0.2
     bio[,2]   <- x[x$id %in% 'xN','value']
     bio[,3]   <- x[x$id %in% 'wX','value']

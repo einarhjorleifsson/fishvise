@@ -51,3 +51,15 @@ CalcSurvey2bio	pI2
 Obssurvey2bio	oI2
 PredN	pN
 FishingYearCatch	qY
+RefF	refF
+CalcCatchIn1000tons	pY
+CatchIn1000tons	oY
+Spawningstock	ssb
+Eggproduction	ssb_egg
+CbioR	xxx
+RefBio1	xxx2
+RefBio2	refB
+PredictedRecruitment	meanR
+Recruitment	r
+CalcSurveyBiomass1	pI1
+ObsSurveyBiomass1	oI1

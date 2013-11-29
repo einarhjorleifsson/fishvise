@@ -2,10 +2,13 @@
 \alias{read.lowestoft}
 \title{Read in Lowestoft-format VPA data}
 \usage{
-  read.lowestoft(filename)
+  read.lowestoft(filename, Format = "List")
 }
 \arguments{
   \item{filename}{The name of the file to read in}
+
+  \item{Format}{The format of the output, available is
+  "List","Wide","Long"}
 }
 \description{
   Read in Lowestoft-format VPA data

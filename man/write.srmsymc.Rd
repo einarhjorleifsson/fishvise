@@ -5,7 +5,8 @@
   write.srmsymc(rby, iba, aR,
     col_names = c("year", "r", "ssb"), opt_sr_model = 1,
     opt_sim = 1, opt_pen = 1, opt_age = 1, rba,
-    filename_age = "age.dat", aP, years)
+    filename_age = "age.dat", aP, years,
+    align_rectruitment = TRUE)
 }
 \arguments{
   \item{rby}{A list that contains in its first three rows
@@ -46,6 +47,8 @@
 
   \item{years}{vector containing years to include in the
   ssb-r}
+
+  \item{align_recruitment}{XXX}
 }
 \description{
   Some details, including link to the function a) running

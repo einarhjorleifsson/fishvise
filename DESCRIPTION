@@ -28,3 +28,4 @@ Collate:
     'fpress.R'
     'multibeam.R'
     'utilities_geo.R'
+    'admb_rvk.R'

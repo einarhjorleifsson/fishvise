@@ -2,31 +2,16 @@
 \alias{hcr_management_fmort}
 \title{F-based Harvest Control Rule}
 \usage{
-  hcr_management_fmort(d, y, h, delay, hrate_hat, ssb_hat,
-    Btrigger)
+  hcr_management_fmort(y, h, hrate, ssb, ctr)
 }
 \arguments{
-  \item{d}{XXX}
-
   \item{y}{XXX}
 
   \item{h}{XXX}
 
-  \item{delay}{integer If 0 next years TAC (y+1) is based
-  on stock in numbers in the assessment year (y). If 1 next
-  years TAC(y+1) is based on stock in numbers in the
-  advisory year (y+1).}
+  \item{hrate}{Harvest rate - with error}
 
-  \item{hrate_hat}{vector Target fishing mortality with
-  observation noise included.}
-
-  \item{ssb_hat}{vector Observed spawning stock biomass.}
-
-  \item{Btrigger}{numeric Btrigger of the HCR. The harvest
-  rate is linearily reduced for spawning biomass below
-  Btrigger. Setting Btrigger to 0 is equivalent to a HCR
-  where target fishing mortality is constant, irrespective
-  of spawning stock status.}
+  \item{ssb}{Spawning stock biomass - with error}
 }
 \description{
   The F-based rule is the conventional ICES decision rule.

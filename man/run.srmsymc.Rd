@@ -2,10 +2,15 @@
 \alias{run.srmsymc}
 \title{Run srmsymc}
 \usage{
-  run.srmsymc(sr, nits = 100, path, output = FALSE)
+  run.srmsymc(sr, opt_sen = 1, opt_pen = 1, nits = 100,
+    path, output = FALSE)
 }
 \arguments{
   \item{sr}{integer. containg the stock-recruitment model}
+
+  \item{opt_sen}{XXX}
+
+  \item{opt_pen}{XXX}
 
   \item{nits}{Number of iterations of bootstrapping - if 0,
   does only the deterministic fit}

@@ -3,7 +3,7 @@
 \alias{hcr_iCod}
 \title{XX}
 \description{
-  A \emph{list} column matching keys
+  XXX
 }
 \author{
   Einar Hjorleifsson

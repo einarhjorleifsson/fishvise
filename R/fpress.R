@@ -70,7 +70,7 @@ hcr_set_dimensions <- function(ctr) {
              dimnames=list(yearclass=startYC:y2,
                            hrate=HRATE,
                            iter=1:iter))
-  d$cvR <- d$rDEV <- d$R <- x
+  d$cvR  <- x
   
   #
   d$cvcW <- hcr_set_wgtErrors(d$cvcW,ctr)
@@ -301,16 +301,17 @@ hcr_TAC_to_Fmult <- function(y,h) {
   Fmult <- TAC/colSums(Ba * Sa * exp(-Ma)) + 0.05
   for (i in 1:5) {
     Fa <- t(Fmult * t(Sa))
-    Za <- Fa + Ma
+    Za <- Fa + Ma + epsilon  #added on iSaithe, but why worked on iCod?
     Y1 <- colSums(Fa/Za * (1 - exp(-Za)) * Ba)
     Fa <- t((Fmult + epsilon) * t(Sa))
-    Za <- Fa + Ma
+    Za <- Fa + Ma + epsilon #added on iSaithe, but why worked on iCod?
     Y2 <- colSums(Fa/Za * (1 - exp(-Za)) * Ba)
     dY <- (Y2 - Y1)/epsilon
     Fmult <- Fmult - (Y2 - TAC)/dY
   }
   Fmult <- ifelse(TAC == 0, 0, Fmult)
   Fmult <- ifelse(Fmult < 0, 0, Fmult)
+  Fmult <- ifelse(Fmult > 1.5,1.5,Fmult)  # Quick fix
   return(Fmult)
 }
 
@@ -371,7 +372,7 @@ hcr_operating_model <- function(y, h, ctr, Fmult, nR=1) {
   # ssb <- colSums(Ny*exp(-(My*pMy+(Fy+Dy)*pFy))*maty*sWy * (0.005*sWy))
   
   
-  X$N[1,y,h,] <<- hcr_recruitment_model(ssb = ssb, X$cvR[y, h,], ctr=ctr)
+  X$N[1,y,h,] <<- hcr_recruitment_model(ssb = ssb, X$cvR[y,h, ], ctr = ctr)
   
   N[1,] <- X$N[1,y,h,] # update the recruits in the current year
   # TAKE THE CATCH
@@ -399,10 +400,11 @@ hcr_operating_model <- function(y, h, ctr, Fmult, nR=1) {
 #' @param cv XXX
 #' @param ctr XXX
 #' 
-hcr_recruitment_model <- function(ssb,cv,ctr) {
+hcr_recruitment_model <- function (ssb, cv, ctr) 
+  {
   rec <- switch(ctr$r_model,
-                recruit1(ssb,ctr$ssb_break,ctr$r_mean,cv),   # Hockey Stick
-                recruit2(ssb,ctr$ssb_break,ctr$r_mean,cv)) # Bootstrap deviation
+                recruit1(ssb, ctr, cv),
+                recruit2(ssb, ctr$ssb_break, ctr$r_mean, cv))
   return(rec)
 }
 
@@ -414,12 +416,12 @@ hcr_recruitment_model <- function(ssb,cv,ctr) {
 #' @export
 #' 
 #' @param ssb XXX
-#' @param ssbcut XXX
-#' @param recmean XXX
+#' @param ctr XXX
 #' @param reccv XXX
-recruit1 <- function (ssb, ssbcut, recmean, reccv) 
-  {
-  rec <- ifelse(ssb >= ssbcut, 1, ssb/ssbcut) * recmean * reccv
+recruit1 <- function (ssb, ctr, reccv) 
+{
+  rec <- ifelse(ssb >= ctr$ssb_break, 1, ssb/ctr$ssb_break) * ctr$r_mean * reccv
+  rec <- rec/exp(ctr$r_cv^2/2)
   return(rec)
 }
 
@@ -537,19 +539,10 @@ hcr_management_effort <- function(hrate_hat,ssb_hat,Btrigger)
 #' 
 #' @export
 #' 
-#' @param d XXX
 #' @param y XXX
 #' @param h XXX
-#' @param delay integer If 0 next years TAC (y+1) is based on stock in numbers
-#' in the assessment year (y). If 1 next years TAC(y+1) is based on stock in
-#' numbers in the advisory year (y+1).
-#' @param hrate_hat vector Target fishing mortality with observation noise
-#' included.
-#' @param ssb_hat vector Observed spawning stock biomass.
-#' @param Btrigger numeric Btrigger of the HCR. The harvest rate is linearily
-#' reduced for spawning biomass below Btrigger. Setting Btrigger to 0 is
-#' equivalent to a HCR where target fishing mortality is constant, irrespective
-#' of spawning stock status.
+#' @param hrate Harvest rate - with error
+#' @param ssb Spawning stock biomass - with error
 #' @note Need to check is ssb-hat is calculated according to the correct delay
 #' specification. 
 #' 
@@ -557,28 +550,31 @@ hcr_management_effort <- function(hrate_hat,ssb_hat,Btrigger)
 #' also include a TAC-constraint, either the
 #' Icelandic type or the convention percentage contraint used in EU stocks.
  
-hcr_management_fmort <- function(d,y,h,delay,hrate_hat,ssb_hat,Btrigger)
+hcr_management_fmort <- function(y,h,hrate,ssb,ctr)
   {
   
-  selF     <- d$selF[,y + delay,h,]
-  selD     <- d$selD[,y + delay,h,]
-  Na       <- d$N[,y + delay,h,]
-  cWa      <- d$cW[,y + delay,h,]
-  selF     <- d$selF[,y + delay,h,]
-  selD     <- d$selD[,y + delay,h,]
-  Ma       <- d$M[,y + delay,h,] 
+  
+  
+  selF     <- X$selF[,y + ctr$delay,h,]
+  selD     <- X$selD[,y + ctr$delay,h,]
+  Na       <- X$N[,y + ctr$delay,h,]
+  cWa      <- X$cW[,y + ctr$delay,h,]
+  selF     <- X$selF[,y + ctr$delay,h,]
+  selD     <- X$selD[,y + ctr$delay,h,]
+  Ma       <- X$M[,y + ctr$delay,h,] 
   
   # adjust harvest rate
-  i <- ssb_hat < Btrigger  
-  hrate_hat[i] <- hrate_hat[i] * ssb_hat[i]/Btrigger  
+  i <- ssb < ctr$b_trigger  
+  hrate[i] <- hrate[i] * ssb[i]/ctr$b_trigger  
   
-  Fa <- t(hrate_hat * t(selF))
-  Da <- t(hrate_hat * t(selD))
+  Fa <- t(hrate * t(selF))
+  Da <- t(hrate * t(selD))
 
-  tac_y2 <- colSums(Na * Fa/(Fa + Da + Ma + 1e-05) * 
+  tac <- colSums(Na * Fa/(Fa + Da + Ma + 1e-05) * 
                              (1 - exp(-(Fa + Da + Ma))) * cWa)
   
-  return(tac_y2)
+  X$TAC[y+1,h,] <<- tac
+
 }
 
 #' @title Biomass-based Harvest Control Rule
