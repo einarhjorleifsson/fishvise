@@ -261,3 +261,45 @@ iconvDF <- function(data,from="ISO8859-1",to="UTF-8", ...) {
   }
   return(data)
 }
+
+
+#' @title Converts date to correponding quota year
+#' 
+#' @description XXX
+#'
+#' @export
+#' 
+#' @param x A vector containing dates
+
+date_2_qyear <- function(x) 
+{
+  res <- ifelse(month(x) < 9,
+                res <- paste(year(x)-1,substr(year(x),3,4),sep="/"),
+                res <- paste(year(x),substr(year(x)+1,3,4),sep="/"))
+  i <- res == "1990/91"
+  res[i] <- "1991/91"
+  return(res)
+}
+
+#' @title Converts date to first date (1. september) of each quota year
+#' 
+#' @description Note that the first quota year was from 1. januar 1991 to
+#' 31. august 1991. Taken care of in the function.
+#'
+#' @export
+#' 
+#' @param x A vector containing dates
+
+date_2_qyear_start <- function(x) 
+{
+  i <- month(x) < 9
+  year(x[i]) <- year(x[i]) - years(1)
+  day(x) <- 1
+  month(x) <- 9
+  
+  # fix the first qyear
+  i <- year(x) == 1991
+    month(x[i]) <- 1
+  
+  return(x)
+}

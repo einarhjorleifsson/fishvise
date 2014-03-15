@@ -9,7 +9,9 @@ Depends:
     plyr,
     stringr,
     reshape2,
-    ggplot2
+    ggplot2,
+    fjolst,
+    geo
 Suggests:
     knitr,
     FLCore,
@@ -29,3 +31,4 @@ Collate:
     'srmsymc.R'
     'utilities.R'
     'utilities_geo.R'
+    'survey_functions.R'

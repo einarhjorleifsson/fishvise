@@ -1,0 +1,483 @@
+\documentclass[a4paper]{article}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,margin=2.5cm}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{amstext}
+\usepackage{graphicx}
+\usepackage{longtable}
+
+\begin{document}
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Some notes on survey index calculation in fishvise}
+
+\title{Calculation of survey indices using the fishvice R-library}
+\author{Einar Hjörleifsson}
+\maketitle
+
+
+\section*{Preamble}
+The primary objective of this document is to describe functions and scripts in the R-package \emph{fishvice} that should produce same results as are currently are obtained via the shell scripts.
+
+\newpage{}
+<<setup, echo=FALSE, cache=FALSE>>=
+suppressPackageStartupMessages(require(fishvise))
+@
+
+
+<<sessionInfo, results='asis', cache=FALSE, echo=FALSE>>=
+toLatex(sessionInfo(), locale=FALSE)
+@
+
+<<x, comment='', cache=FALSE>>=
+print('This document was created in knitr')
+@
+
+\newpage{}
+
+\section*{Length based survey indices}
+\subsection*{Current practice}
+
+The standardized spring survey (SMB) indices have heteroforth been calculated using a bunch of R-shell script. The base location is:
+
+\texttt{/net/hafkaldi/u2/reikn/Splus5/SMB}.
+
+In this directory the mother of all following scripts is \texttt{allarteg.sh} (see Appendix). The first step in the script is to move to a specific species directory and then run from there \texttt{BIOVISIT\_R.sh} and for some stocks \texttt{BIOVISIT.fastar\_R.sh} (see Appendix). In principle these \texttt{BIOVISIT} scripts calculate the abundance and biomass indices and cv for each length class by strata and aggregate those them according various specified areas. The calculation for each length class is performed via a loop within the R-script but the year loop is run within the shell script.
+
+The output of the \texttt{BIOVISIT\_R.sh} are two \emph{data.frame}s that are located in the binary \emph{.RData} file of the respective species directories. Below is an expample how these \emph{data.frame}s are accessed, taking cod as an example:
+<<biovisitTorskur, cache=FALSE>>=
+#attach('/net/hafkaldi/export/u2/reikn/Splus5/SMB/TORSKUR/.RData')
+#str(base.visit)
+#str(aggr.visit)
+@
+The \texttt{base.visit} contains indices values for each strata while \texttt{aggr.visit} contains indices values compiled for various areas. In both \emph{data.frame}s the indices are calculated relative for each length class for each year. The common columns are:
+\begin{itemize}
+  \item \texttt{fj} Abundance indices of a given length class
+  \item \texttt{cv.fj} Abundance coefficent of variation
+  \item \texttt{bio.staerri} Biomass indices equal to and greater than a given length (\texttt{lengd})
+  \item \texttt{cv.bio.staerri} Coefficient of variation for biomass indices equal to and greater than a given length (\texttt{lengd})
+  \item \texttt{fj.minni} Abundance indices equal to or less than a given length (\texttt{lengd})
+  \item \texttt{cv.fj.minni} Coefficient of variation for biomass indices equal to and less than a given length (\texttt{lengd})
+  \item \texttt{lengd} The length class
+  \item \texttt{ar} The year
+  \item \texttt{bio} Biomass of a given length class
+\end{itemize}
+
+The \texttt{base.visit} in addition contains the field \texttt{strata} representing the strata and the \texttt{aggr.visit} contains the field \texttt{svaedi} containing the name of area over which the statified indices have been aggregated and the field \texttt{svaedisnr} containing a numerical value representing the area.
+
+Here two examples how these data are often represented (using the cod as an example):
+<<example01, cache=FALSE>>=
+i <- smb_cod_aggr$ar %in% 2013 & smb_cod_aggr$svaedi %in% 'Heild'
+length2013.official <- smb_cod_aggr[i,]
+ggplot(length2013.official) + 
+  geom_line(aes(lengd,fj)) +
+  labs(title='2013 SMB cod abundance abundance indices by length')
+@
+
+<<example02, cache=FALSE>>=
+i <- smb_cod_aggr$lengd %in% 5 & smb_cod_aggr$svaedi %in% 'Heild'
+biomass.official <- smb_cod_aggr[i,]
+ggplot(biomass.official) +
+  geom_pointrange(aes(ar,bio.staerri,
+                      ymin=bio.staerri*(1-cv.bio.staerri),
+                      ymax=bio.staerri*(1+cv.bio.staerri))) +
+  labs(title='SMB cod total biomass indices')
+@
+
+
+\subsection*{What is under the hood?}
+
+In the \texttt{BIOVISIT\_R.sh} various functions and data are used to compile the length based indices. These are generally accessed by attaching certain binary files that reside on the network. In the library \emph{fishvice} attempt has been made to include these objects (functions and data), the objective being to ...
+
+<<theSTRATAS>>=
+tmp <- ldply(STRATAS)
+ggplot(tmp,aes(lon,lat,gropup=.id,fill=.id)) + 
+  geom_polygon() + 
+  theme(legend.position = 'none',
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank()) +
+  coord_map()
+@
+
+
+\subsection*{The fishvice library}
+The following describes steps that can be used to obtains calculation of survey indices using the \emph{fishvice} library.
+\subsubsection*{Cod 2013 SMB abundance by length class}
+\begin{enumerate}
+  \item Load the library:
+<<setupTeg0>>=
+require(fishvise)
+@
+  \item Specify the year and the species and indicate if the indices should be calculatd by sex:
+<<setupTeg1>>=
+yr <- 2013
+TEG <- 1
+KYN <- FALSE
+@
+\begin{enumerate}
+  \item Set the length-weight coefficent:
+<<setupTeg2a>>=
+lwcoeff <- c(0.01,3.00)
+@
+  \item Or one could obtain them from a data object stored in the fishvice library:
+<<setupTeg2>>=
+lwcoeff <- LWCOEFF[[as.character(TEG)]]
+lwcoeff
+@
+\end{enumerate}
+\begin{enumerate}
+  \item Set the length classes for which the indices should be compiled:
+<<setupTeg3a>>=
+lengthClass <- c(5:140)
+@
+  \item Or one could obtain them from a data object stored in the fishvice library:
+<<setupTeg3b>>=
+lengthClass <- LENGDIR[[as.character(TEG)]]
+@
+\end{enumerate}
+  \item Subset the data:
+  
+  Here we will use the station list stored in the fishvice library (\texttt{smbSTODVAR})
+<<subsetData>>=
+require(fjolst)
+Oracle <- FALSE
+st <- smbSTODVAR[[yr-1984]][smbSTODVAR[[yr-1984]]$tognumer %in% 1:39,]
+st <- st[,c('synis.id','ar','toglengd','newstrata')]
+le <- lesa.lengdir(st$synis.id,TEG,col.names="kyn")
+nu <- lesa.numer(st$synis.id,TEG) 
+le <- Skala.med.toldum(le,nu)
+le$fj.alls[is.na(le$fj.alls)] <- 0
+le$bio <- le$fj.alls*lwcoeff[1]*le$lengd^lwcoeff[2]/1e6 #tonn
+le$fj.alls <- le$fj.alls/1e3 # thousands
+@
+  \item Calculate the index:
+<<CalcIndex01>>=
+d <- bioIndex(lengths=le,stations=st,sex=KYN,lenClass=lengthClass,yr=yr,lwcoeff=lwcoeff)
+@
+\end{enumerate}
+
+Lets look at the results and make comparison with the 'offical' calculation (see above):
+<<PlotIndex01>>=
+d1 <- d$aggr[d$aggr$svaedi %in% 'Heild',]
+d1$source <- 'fishvice'
+length2013.official$source <- 'official'
+d <- rbind(d1,length2013.official)
+ggplot(d,aes(lengd,fj,colour=source)) + geom_line(alpha=0.5) +
+  scale_colour_brewer(palette='Set1')
+@
+
+
+\subsubsection*{Calculating biomass indices for all the years}
+The example shows how to calculate the total biomass index for cod. Because
+we are interested in the total biomass indices only we calculate the only 
+values for the 5 cm length class. This being so because the value we are
+interested in is \texttt{bio.staerri} than 5 cm. The steps done here are similar to that described above with the addition of creating a loop over the years:
+<<bioAllYears>>=
+TEG <- 1
+KYN <- FALSE
+lwcoeff <- LWCOEFF[[as.character(TEG)]]
+lengdir <- LENGDIR[[as.character(TEG)]]
+Oracle <- FALSE
+years <- c(1985:2013)
+for (j in 1:length(years)) {
+  st <- smbSTODVAR[[years[j]-1984]][smbSTODVAR[[years[j]-1984]]$tognumer %in% 1:39,]
+  le <- lesa.lengdir(st$synis.id,TEG,col.names="kyn")
+  nu <- lesa.numer(st$synis.id,TEG) 
+  le <- Skala.med.toldum(le,nu)
+  le$fj.alls[is.na(le$fj.alls)] <- 0
+  le$bio <- le$fj.alls*lwcoeff[1]*le$lengd^lwcoeff[2]/1e6 #tonn
+  le$fj.alls <- le$fj.alls/1e3 # thousands
+  tmp <- bioIndex(lengths=le,stations=st,sex=KYN,lenClass=5,yr=years[j],lwcoeff=lwcoeff)
+  if(j == 1) d1 <- tmp$aggr[tmp$aggr$svaedi %in% 'Heild',]
+  if(j >  1) d1 <- rbind(d1,tmp$aggr[tmp$aggr$svaedi %in% 'Heild',])
+}
+@
+Lets look at the results and make comparison with the 'offical' calculation (see above):
+<<bioAllYears2>>=
+d1$bio.staerri <- d1$bio.staerri/1e3
+d1$source <- 'fishvice'
+d1$ar <- d1$ar + 0.1
+biomass.official$bio.staerri <- biomass.official$bio.staerri/1e3
+biomass.official$source <- 'official'
+d <- rbind(d1,biomass.official)
+ggplot(d) + geom_pointrange(aes(ar,bio.staerri,
+                                ymin=bio.staerri*(1-cv.bio.staerri),
+                                ymax=bio.staerri*(1+cv.bio.staerri),
+                                colour=source)) +
+  scale_colour_brewer(palette='Set1')
+@
+
+Lets try the fall survey:
+<<bioAllYears3>>=
+TEG <- 1
+KYN <- FALSE
+lwcoeff <- LWCOEFF[[as.character(TEG)]]
+lengdir <- LENGDIR[[as.character(TEG)]]
+Oracle <- FALSE
+years <- c(1995:2010,2012)
+for (j in 1:length(years)) {
+  st <- smhSTODVAR[[years[j]-1994]][smhSTODVAR[[years[j]-1994]]$tognumer %in% 1:39,]
+  le <- lesa.lengdir(st$synis.id,TEG,col.names="kyn")
+  nu <- lesa.numer(st$synis.id,TEG)
+  if(nrow(nu) == 1) nu <- rbind(nu,nu) # Vegna villu í skala.med.toldum
+  if(nrow(le) > 0) {
+    le <- Skala.med.toldum(le,nu)
+    le$fj.alls[is.na(le$fj.alls)] <- 0
+    le$bio <- le$fj.alls*lwcoeff[1]*le$lengd^lwcoeff[2]/1e6 #tonn
+    le$fj.alls <- le$fj.alls/1e3 # thousands
+  }
+  if(nrow(le) == 0) { 
+   le <- data.frame(synis.id=st$synis.id[1:2],lengd=lengdir[1:2],kyn=c(1,1),
+                    fj.alls=c(0,0),bio=c(0,0))
+  }
+  tmp <- bioIndex(lengths=le,stations=st,sex=KYN,lenClass=5,yr=years[j],lwcoeff=lwcoeff)
+  if(j == 1) d2 <- tmp$aggr[tmp$aggr$svaedi %in% 'Heild',]
+  if(j >  1) d2 <- rbind(d2,tmp$aggr[tmp$aggr$svaedi %in% 'Heild',])
+}
+
+d2$bio.staerri <- d2$bio.staerri/1e3
+ggplot(d2) + geom_pointrange(aes(ar,bio.staerri,
+                                ymin=bio.staerri*(1-cv.bio.staerri),
+                                ymax=bio.staerri*(1+cv.bio.staerri)))
+smh1995_2012 <- d2
+@
+
+Both on the same graph:
+<<bothGraphs>>=
+d1$ar <- d1$ar + 0.25
+d1$sur <- 'smb'
+d2$ar <- d2$ar + 0.75
+d2$sur <- 'smh'
+d <- rbind(d1[,names(d2)],d2)
+ggplot(d) + geom_pointrange(aes(ar,bio.staerri,
+                                ymin=bio.staerri*(1-cv.bio.staerri),
+                                ymax=bio.staerri*(1+cv.bio.staerri),
+                                colour=sur))
+@
+
+\newpage{}
+\section*{Appendix}
+Scripts used in calculation of spring survey indices
+\subsection*{allarteg.sh}
+The shell script \texttt{allarteg.sh} resides in \texttt{/net/hafkaldi/u2/reikn/Splus5/SMB}:
+\begin{verbatim}
+echo "torskur"
+cd TORSKUR 
+../BIOVISIT_R.sh
+../BIOVISIT.fastar_R.sh
+echo "ysa"
+cd ../YSA
+../BIOVISIT_R.sh
+../BIOVISIT.fastar_R.sh
+echo "karfi"
+cd ../KARFI
+../BIOVISIT.fastar_R.sh
+../BIOVISIT_R.sh
+echo "langlura"
+cd ../LANGLURA
+../BIOVISIT.fastar_R.sh
+../BIOVISIT_R.sh
+cd ../SKARKOLI
+../BIOVISIT.fastar_R.sh
+../BIOVISIT_R.sh
+echo "keila"
+cd ../KEILA
+../BIOVISIT_R.sh
+echo "langa"
+cd ../LANGA
+../BIOVISIT_R.sh
+echo "hlyri"
+cd ../HLYRI
+../BIOVISIT_R.sh
+echo "blalanga"
+cd ../BLALANGA
+../BIOVISIT_R.sh
+echo "tylura"
+cd ../TYLURA
+../BIOVISIT_R.sh
+echo "steinbitur"
+cd ../STEINBITUR
+../BIOVISIT_R.sh
+echo "ufsi"
+cd ../UFSI
+../BIOVISIT_R.sh
+../BIOVISIT.fastar_R.sh
+echo "sandkoli"
+cd ../SANDKOLI
+../BIOVISIT_R.sh
+echo "tindaskata"
+cd ../TINDASKATA
+../BIOVISIT_R.sh
+echo "luda"
+cd ../LUDA
+../BIOVISIT_R.sh
+echo "djupkarfi"
+cd ../DJUPKARFI
+../BIOVISIT_R.sh
+echo "skrapflura"
+cd ../SKRAPFLURA
+../BIOVISIT_R.sh
+echo "skotuselur"
+cd ../SKOTUSELUR
+../BIOVISIT_R.sh
+echo "gulllax"
+cd ../GULLLAX 
+../BIOVISIT_R.sh
+echo "HROGNKELSI"
+cd ../HROGNKELSI
+../BIOVISIT_R.sh
+cd ../GRALUDA
+../BIOVISIT_R.sh
+\end{verbatim}
+
+\subsection*{BIOVISIT\_R.sh}
+The shell script \texttt{allarteg.sh} resides in \texttt{/net/hafkaldi/u2/reikn/Splus5/SMB}:
+\begin{verbatim}
+for yr in 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 
+1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013
+do
+echo '
+year <-  999
+print(year)
+Rattach("..")
+Rattach("../GEOMETRY.NEW")
+lwcoeff <- LWCOEFF[[as.character(TEG)]]
+lengdir <- LENGDIR[[as.character(TEG)]]
+st1 <- STODVAR$y999[STODVAR$y999$tognumer %in% 1:39,]
+tmp <- lesa.lengdir(st1$synis.id,TEG,col.names="kyn")
+tmp1 <- lesa.numer(st1$synis.id,TEG) 
+tmp <- Skala.med.toldum(tmp,tmp1)
+i <- is.na(tmp$fj.alls) 
+tmp$fj.alls[i] <- 0
+tmp$bio <- tmp$fj.alls*lwcoeff[1]*tmp$lengd^lwcoeff[2]/1e6 # tonn
+tmp$fj.alls <- tmp$fj.alls/1e3 # þúsundir
+
+for( i in 1:length(lengdir)) {
+print(i) 
+tmp1 <- tmp[tmp$lengd==lengdir[i],]
+if(nrow(tmp1) > 0) {
+x <- apply.shrink(tmp1$fj.alls,tmp1$synis.id,sum) 
+names(x) <- c("synis.id","fj")
+st <- join(st1[,c("newstrata","toglengd","synis.id")],x,"synis.id",set=0)
+}
+else {
+st <- st1[,c("newstrata","toglengd","synis.id")]
+st$fj <- rep(0,nrow(st)) 
+}
+
+if(KYN) {
+tmp1 <- tmp[tmp$lengd==lengdir[i] & tmp$kyn==1 & !is.na(tmp$kyn),]
+if(nrow(tmp1) > 0) {
+x <- apply.shrink(tmp1$fj.alls,tmp1$synis.id,sum) 
+names(x) <- c("synis.id","fjhaenga")
+st <- join(st,x,"synis.id",set=0)
+}
+
+else {
+st$fjhaenga <- rep(0,nrow(st)) 
+}
+tmp1 <- tmp[tmp$lengd==lengdir[i] & tmp$kyn==2 & !is.na(tmp$kyn),]
+if(nrow(tmp1) > 0) {
+x <- apply.shrink(tmp1$fj.alls,tmp1$synis.id,sum) 
+names(x) <- c("synis.id","fjhrygna")
+st <- join(st,x,"synis.id",set=0)
+}
+else {
+st$fjhrygna <- rep(0,nrow(st)) 
+}
+}
+tmp1 <- tmp[tmp$lengd >= lengdir[i],]
+if(nrow(tmp1) > 0) {
+x <- apply.shrink(tmp1$bio,tmp1$synis.id,sum) 
+names(x) <- c("synis.id","bioge") 
+st <- join(st,x,"synis.id",set=0)
+}
+else {
+st$bioge <- rep(0,nrow(st)) 
+}
+
+tmp1 <- tmp[tmp$lengd <= lengdir[i],]
+if(nrow(tmp1) > 0) {
+x <- apply.shrink(tmp1$fj.alls,tmp1$synis.id,sum) 
+names(x) <- c("synis.id","fjle")
+st <- join(st,x,"synis.id",set=0)
+}
+else {
+st$fjle <- rep(0,nrow(st)) 
+}
+
+tmp.visit <- Calc.index(st,"fj")
+tmp.biovisit <- Calc.index(st,"bioge")
+tmp.seidavisit <- Calc.index(st,"fjle")
+if(KYN) {
+tmp.haengavisit <- Calc.index(st,"fjhaenga")
+tmp.hrygnuvisit <- Calc.index(st,"fjhrygna")
+}
+
+tmp.visit1 <- tmp.visit$result[,c("strata","total","cv")]
+names(tmp.visit1)[2:3] <- c("fj","cv.fj")
+tmp.visit1$bio.staerri <- tmp.biovisit$result[,"total"]
+tmp.visit1$cv.bio.staerri <- tmp.biovisit$result[,"cv"]
+tmp.visit1$fj.minni <- tmp.seidavisit$result[,"total"]
+tmp.visit1$cv.fj.minni <- tmp.seidavisit$result[,"cv"]
+if(KYN) {
+tmp.visit1$fj.haenga <- tmp.haengavisit$result[,"total"]
+tmp.visit1$cv.fj.haenga <- tmp.haengavisit$result[,"cv"]
+tmp.visit1$fj.hrygna <- tmp.hrygnuvisit$result[,"total"]
+tmp.visit1$cv.fj.hrygna <- tmp.hrygnuvisit$result[,"cv"]
+}
+
+tmp.visit2 <- tmp.visit$aggr.output[,c("total","cv")]
+names(tmp.visit2) <- c("fj","cv.fj") 
+tmp.visit2$bio.staerri <- tmp.biovisit$aggr.output[,"total"]
+tmp.visit2$cv.bio.staerri <- tmp.biovisit$aggr.output[,"cv"]
+tmp.visit2$fj.minni <- tmp.seidavisit$aggr.output[,"total"]
+tmp.visit2$cv.fj.minni <- tmp.seidavisit$aggr.output[,"cv"]
+if(KYN) {
+tmp.visit2$fj.haenga <- tmp.haengavisit$aggr.output[,"total"]
+tmp.visit2$cv.fj.haenga <- tmp.haengavisit$aggr.output[,"cv"]
+tmp.visit2$fj.hrygna <- tmp.hrygnuvisit$aggr.output[,"total"]
+tmp.visit2$cv.fj.hrygna <- tmp.hrygnuvisit$aggr.output[,"cv"]
+}
+
+tmp.visit2$svaedi <- dimnames(tmp.visit2)[[1]]
+tmp.visit2$svaedisnr <- 1:nrow(tmp.visit2)
+dimnames(tmp.visit2)[[1]] <- 1:nrow(tmp.visit2)
+tmp.visit1$lengd <- rep(lengdir[i],nrow(tmp.visit1))
+tmp.visit2$lengd <- rep(lengdir[i],nrow(tmp.visit2))
+tmp.visit1$ar <- rep(999,nrow(tmp.visit1))
+tmp.visit2$ar <- rep(999,nrow(tmp.visit2))
+if(i == 1 ) {
+tmp.visit1a <- tmp.visit1
+tmp.visit2a <- tmp.visit2
+}
+else {
+tmp.visit1a <- rbind(tmp.visit1a,tmp.visit1)
+tmp.visit2a <- rbind(tmp.visit2a,tmp.visit2)
+}
+}
+if(year ==  1985) {
+base.visit <- tmp.visit1a
+aggr.visit <- tmp.visit2a
+}
+if(year != 1985) {
+base.visit <- rbind(base.visit,tmp.visit1a)
+aggr.visit <- rbind(aggr.visit,tmp.visit2a) 
+} 
+' |sed "s/999/$yr/g" |R --save > /dev/null
+done  
+
+echo ' 
+Rattach("..")
+Rattach("../GEOMETRY.NEW")
+lwcoeff <- LWCOEFF[[as.character(TEG)]]
+# tonn því fjöldi er þegar / 1000 en lengd-þyngdar gefur grömm.  
+aggr.visit$bio <- aggr.visit$fj*lwcoeff[1]*aggr.visit$lengd^lwcoeff[2]/1e3
+base.visit$bio <- base.visit$fj*lwcoeff[1]*base.visit$lengd^lwcoeff[2]/1e3
+' |R --save > /dev/null
+\end{verbatim}
+
+
+\end{document}

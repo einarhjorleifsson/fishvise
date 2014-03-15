@@ -1,0 +1,29 @@
+\name{write.prelude}
+\alias{write.prelude}
+\title{Writes prelude-file}
+\usage{
+  write.prelude(data, file = "R.pre", na.replace = "")
+}
+\arguments{
+  \item{data}{data.frame or matrix object}
+
+  \item{file}{Name of output file - default is "R.pre"}
+
+  \item{na.replace}{A character to replace NA with in the
+  output file ("" by default)}
+}
+\value{
+  A prelude-file reprsentation of the data object is
+  written to a file
+}
+\description{
+  \code{write.prelude} writes prelude files
+}
+\note{
+  If file exist it is simply overwritten without any
+  warning
+}
+\seealso{
+  \code{\link{read.prelude}} for reading prelude files
+}
+
