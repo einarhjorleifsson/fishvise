@@ -75,3 +75,22 @@ NULL
 #' @author Some author
 NULL
 
+#' @name smb_cod_base
+#' @title Some title
+#' @description from SMB RData
+#' @docType data
+#' @usage Some usage
+#' @format Some format
+#' @source Some source
+#' @author Some author
+NULL
+
+#' @name smb_cod_aggr
+#' @title Some title
+#' @description from SMB RData
+#' @docType data
+#' @usage Some usage
+#' @format Some format
+#' @source Some source
+#' @author Some author
+NULL
