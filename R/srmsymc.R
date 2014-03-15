@@ -516,7 +516,7 @@ read.mc.ypr <- function(file="simparypr.dat",trim=TRUE,longformat=TRUE,doPlot=TR
 #' age-based-data. If missing, set to "age.dat".
 #' @param aP \emph{integer}. Plus group age.
 #' @param years vector containing years to include in the ssb-r
-#' @param align_recruitment XXX
+#' @param align_rectruitment XXX
 
 
 write.srmsymc <- function(rby,iba,aR,col_names=c("year","r","ssb"),opt_sr_model=1,

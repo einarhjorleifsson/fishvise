@@ -241,3 +241,23 @@ i50 <- function(x, ...) {
   return(qs)
 }
 
+#' @title Converts character columns in a \code{data.frame} between Encodings
+#' 
+#' Does the same as \code{iconv} but on a data.frame instead of a vector
+#'  
+#' @export
+#' 
+#' @param data data.frame to convert
+#' @param from A character string describing the current encoding, default is "ISO8859-1"
+#' @param to A character string describing the target encoding
+#' @param ... Other things to pass to \code{iconv}
+#' @return data.frame
+#' @author Einar
+#' @seealso \code{\link{iconv}}
+iconvDF <- function(data,from="ISO8859-1",to="UTF-8", ...) {
+  col_class <- sapply(data,class) == "character"
+  for (i in 1:length(col_class)) {
+    if(col_class[i] == TRUE) data[,i] <- iconv(data[,i],"ISO8859-1", "UTF-8")
+  }
+  return(data)
+}

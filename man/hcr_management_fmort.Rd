@@ -12,6 +12,8 @@
   \item{hrate}{Harvest rate - with error}
 
   \item{ssb}{Spawning stock biomass - with error}
+
+  \item{ctr}{Control file}
 }
 \description{
   The F-based rule is the conventional ICES decision rule.

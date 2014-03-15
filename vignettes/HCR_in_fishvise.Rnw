@@ -121,7 +121,7 @@ for (h in 1:length(HRATE)) {
 
 The result data for now resides in an object in the working directory called (for now) X. This is a list containing arrays of various elements. To just obtain estimates of catches one can simply do:
 <<resultsDemo>>=
-dat <- hcr_summarise_data(X)
+dat <- hcr_summarise_data(X,ctr)
 head(dat)
 @
 

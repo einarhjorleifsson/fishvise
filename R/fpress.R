@@ -543,6 +543,7 @@ hcr_management_effort <- function(hrate_hat,ssb_hat,Btrigger)
 #' @param h XXX
 #' @param hrate Harvest rate - with error
 #' @param ssb Spawning stock biomass - with error
+#' @param ctr Control file
 #' @note Need to check is ssb-hat is calculated according to the correct delay
 #' specification. 
 #' 
@@ -625,7 +626,8 @@ hcr_management_bio <- function(y,h,bio,ssb,ctr)
 #' @export
 #' 
 #' @param X XXX
-hcr_summarise_data <- function(X) {
+#' @param ctr Control file
+hcr_summarise_data <- function(X, ctr) {
   sY <- melt(colSums(X$C * X$cW))
   sS <- melt(colSums(X$N * exp(- (X$pM + X$pF * X$tF)) * X$sW * X$mat))
   sB <- melt(colSums(X$N * X$bW * X$selB))

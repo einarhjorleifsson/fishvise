@@ -19,13 +19,13 @@ Author: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 Maintainer: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 License: GPL-2
 Collate:
-    'fishvise.R'
-    'utilities.R'
     'data.R'
-    'rwx.R'
+    'data_surveys.R'
     'do_ggplot.R'
-    'srmsymc.R'
+    'fishvise.R'
     'fpress.R'
     'multibeam.R'
+    'rwx.R'
+    'srmsymc.R'
+    'utilities.R'
     'utilities_geo.R'
-    'admb_rvk.R'

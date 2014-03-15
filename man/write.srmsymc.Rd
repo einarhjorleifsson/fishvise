@@ -48,7 +48,7 @@
   \item{years}{vector containing years to include in the
   ssb-r}
 
-  \item{align_recruitment}{XXX}
+  \item{align_rectruitment}{XXX}
 }
 \description{
   Some details, including link to the function a) running
