@@ -1,10 +1,5 @@
 .Rproj.user
 .Rhistory
 .RData
-R_fpress/
-R_survey/
-R_msy/
-setup/
-trash/
 .Rbuildignore
-fishvise.Rproj
+README.Rmd
