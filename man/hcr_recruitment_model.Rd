@@ -2,7 +2,7 @@
 \alias{hcr_recruitment_model}
 \title{HCR recruitment model}
 \usage{
-  hcr_recruitment_model(ssb, cv, ctr)
+hcr_recruitment_model(ssb, cv, ctr)
 }
 \arguments{
   \item{ssb}{XXX}
@@ -12,6 +12,6 @@
   \item{ctr}{XXX}
 }
 \description{
-  XXX
+XXX
 }
 

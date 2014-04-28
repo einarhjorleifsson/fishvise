@@ -2,12 +2,12 @@
 \alias{hcr_read_ctr}
 \title{HCR - Read control file}
 \usage{
-  hcr_read_ctr(file)
+hcr_read_ctr(file)
 }
 \arguments{
   \item{file}{filename}
 }
 \description{
-  XXX
+XXX
 }
 

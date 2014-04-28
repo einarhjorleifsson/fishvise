@@ -2,11 +2,13 @@
 \name{hcr_iCod}
 \alias{hcr_iCod}
 \title{XX}
+\usage{
+Some usage
+}
 \description{
-  XXX
+XXX
 }
 \author{
-  Einar Hjorleifsson
+Einar Hjorleifsson
 }
-\keyword{datasets}
 

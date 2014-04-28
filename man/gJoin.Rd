@@ -2,8 +2,7 @@
 \alias{gJoin}
 \title{gJoin}
 \usage{
-  gJoin(x, y, column, name.x, name.y, outer.join = T,
-    set = NA)
+gJoin(x, y, column, name.x, name.y, outer.join = T, set = NA)
 }
 \arguments{
   \item{x}{X}
@@ -21,7 +20,7 @@
   \item{set}{Set}
 }
 \description{
-  The old join from geo, renamed to avoid confusion with
-  join from plyr
+The old join from geo, renamed to avoid confusion with join
+from plyr
 }
 

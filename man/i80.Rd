@@ -2,7 +2,7 @@
 \alias{i80}
 \title{Calculate quantiles}
 \usage{
-  i80(x, ...)
+i80(x, ...)
 }
 \arguments{
   \item{x}{XXX}
@@ -10,6 +10,6 @@
   \item{...}{additional stuff}
 }
 \description{
-  XXX
+XXX
 }
 

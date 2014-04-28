@@ -2,8 +2,8 @@
 \alias{rvk2flr}
 \title{Convert reykjavik to flr}
 \usage{
-  rvk2flr(rbx, sName = "nn", sDesc = "none", pf = 0,
-    pm = 0, cF1 = 5, cF2 = 10)
+rvk2flr(rbx, sName = "nn", sDesc = "none", pf = 0, pm = 0, cF1 = 5,
+  cF2 = 10)
 }
 \arguments{
   \item{rbx}{rbx object}
@@ -21,6 +21,6 @@
   \item{cF2}{XX}
 }
 \description{
-  xx
+xx
 }
 

@@ -2,8 +2,8 @@
 \alias{cat_srmsymc.dat}
 \title{Write srmsymc.dat to disk}
 \usage{
-  cat_srmsymc.dat(name_stock, filename_age, y1, y2, aR, aP,
-    opt_sr_model, opt_sim, opt_age, opt_pen, r, ssb, year)
+cat_srmsymc.dat(name_stock, filename_age, y1, y2, aR, aP, opt_sr_model, opt_sim,
+  opt_age, opt_pen, r, ssb, year)
 }
 \arguments{
   \item{name_stock}{XXX}
@@ -33,9 +33,9 @@
   \item{year}{XXX}
 }
 \description{
-  XXX
+XXX
 }
 \author{
-  Einar Hjorleifsson
+Einar Hjorleifsson
 }
 

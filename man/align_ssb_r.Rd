@@ -2,7 +2,7 @@
 \alias{align_ssb_r}
 \title{Align stock and recruitment data}
 \usage{
-  align_ssb_r(data, col.names = c("year", "r", "ssb"), aR)
+align_ssb_r(data, col.names = c("year", "r", "ssb"), aR)
 }
 \arguments{
   \item{data}{data.frame that contains in its first three
@@ -14,6 +14,6 @@
   \item{aR}{integer that contains the age of recruits}
 }
 \description{
-  XXX
+XXX
 }
 

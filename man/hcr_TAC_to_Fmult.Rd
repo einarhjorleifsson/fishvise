@@ -2,7 +2,7 @@
 \alias{hcr_TAC_to_Fmult}
 \title{hcr_TAC_to_Fmult}
 \usage{
-  hcr_TAC_to_Fmult(y, h)
+hcr_TAC_to_Fmult(y, h)
 }
 \arguments{
   \item{y}{XXX}
@@ -10,6 +10,6 @@
   \item{h}{XXX}
 }
 \description{
-  XXX
+XXX
 }
 

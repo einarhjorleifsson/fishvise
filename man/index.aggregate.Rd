@@ -2,7 +2,7 @@
 \alias{index.aggregate}
 \title{Aggregates stratified indices by users desire}
 \usage{
-  index.aggregate(indices, combine.output)
+index.aggregate(indices, combine.output)
 }
 \arguments{
   \item{indices}{Dataframe containing ...}
@@ -11,8 +11,8 @@
   Std.aggregation}
 }
 \description{
-  Aggregates stratified indices that have been calculated
-  by \code{\link{index.stratify}} This captures the second
-  part of the function \code{\link{Calc.index}}.
+Aggregates stratified indices that have been calculated by
+\code{\link{index.stratify}} This captures the second part
+of the function \code{\link{Calc.index}}.
 }
 

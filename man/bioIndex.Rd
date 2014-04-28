@@ -2,7 +2,7 @@
 \alias{bioIndex}
 \title{Calculate length based indices}
 \usage{
-  bioIndex(lengths, stations, sex, lenClass, yr, lwcoeff)
+bioIndex(lengths, stations, sex, lenClass, yr, lwcoeff)
 }
 \arguments{
   \item{lengths}{\emph{data.frame} containing length
@@ -24,7 +24,7 @@
   relationship.}
 }
 \description{
-  Calculates abundance and biomass survey indices based on
-  length classes for a particular species in a given year.
+Calculates abundance and biomass survey indices based on
+length classes for a particular species in a given year.
 }
 

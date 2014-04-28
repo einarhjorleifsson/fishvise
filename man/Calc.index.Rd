@@ -2,10 +2,9 @@
 \alias{Calc.index}
 \title{Calculate survey indices}
 \usage{
-  Calc.index(sfile, colname, strata.list, std.toglengd = 4,
-    trollbreidd = 17, combine.output = Std.aggregation,
-    use.rallarea = T, leidretta.fyrir.toglengd = T, z,
-    std.cv = 1, mintoglengd, maxtoglengd)
+Calc.index(sfile, colname, strata.list, std.toglengd = 4, trollbreidd = 17,
+  combine.output = Std.aggregation, use.rallarea = T,
+  leidretta.fyrir.toglengd = T, z, std.cv = 1, mintoglengd, maxtoglengd)
 }
 \arguments{
   \item{sfile}{\emph{data.frame} Station table that
@@ -65,36 +64,35 @@
   \code{leidretta.fyrir.toglengd=TRUE}.}
 }
 \value{
-  Returns a \emph{list} with the following
-  \emph{data.frame}s: \itemize{ \item \code{$result} with
-  the following columns: \itemize{ \item \code{strata}:
-  Names/number of the strata \item \code{mean}: Mean
-  (number or biomass) within the strata \item \code{stdev}:
-  Standard deviation within the strata \item \code{count}:
-  Number of tows within the strata \item \code{area}: The
-  area (sqmiles) of the strata \item \code{se}: Standard
-  error \item \code{cv}: Coefficient of variation \item
-  \code{total}: Total (number or biomass) in the strata. }
-  \item \code{$Res.names} Contains information about the
-  strata names \item \code{$Aggr.output} with the following
-  columns: \itemize{ \item \code{mean}: Mean (number or
-  biomass) within an area \item \code{se}: Standard error
-  within an area \item \code{count}: Number of stations
-  within an area ?????? \item \code{area}: The area
-  (sqmiles) of the area \item \code{total}: Total (number
-  or biomass) in the area. } }
+Returns a \emph{list} with the following
+\emph{data.frame}s: \itemize{ \item \code{$result} with the
+following columns: \itemize{ \item \code{strata}:
+Names/number of the strata \item \code{mean}: Mean (number
+or biomass) within the strata \item \code{stdev}: Standard
+deviation within the strata \item \code{count}: Number of
+tows within the strata \item \code{area}: The area
+(sqmiles) of the strata \item \code{se}: Standard error
+\item \code{cv}: Coefficient of variation \item
+\code{total}: Total (number or biomass) in the strata. }
+\item \code{$Res.names} Contains information about the
+strata names \item \code{$Aggr.output} with the following
+columns: \itemize{ \item \code{mean}: Mean (number or
+biomass) within an area \item \code{se}: Standard error
+within an area \item \code{count}: Number of stations
+within an area ?????? \item \code{area}: The area (sqmiles)
+of the area \item \code{total}: Total (number or biomass)
+in the area. } }
 }
 \description{
-  Original function from Hoski. This function is used in
-  \code{\link{bioIndex.Original}}. The function does in
-  principle three things: \itemize{ \item Standardizes
-  value (e.g. number of fish) by tow length. This is can be
-  done as a separate step by using
-  \code{\link{index.standardize}}. \item Calculates
-  stratified indices. This can be done as a separate step
-  by using \code{\link{index.stratify}}. \item Aggregates
-  the stratified indices in various ways. This can be done
-  as a separate step by using
-  \code{\link{index.aggregate}}. }
+Original function from Hoski. This function is used in
+\code{\link{bioIndex.Original}}. The function does in
+principle three things: \itemize{ \item Standardizes value
+(e.g. number of fish) by tow length. This is can be done as
+a separate step by using \code{\link{index.standardize}}.
+\item Calculates stratified indices. This can be done as a
+separate step by using \code{\link{index.stratify}}. \item
+Aggregates the stratified indices in various ways. This can
+be done as a separate step by using
+\code{\link{index.aggregate}}. }
 }
 

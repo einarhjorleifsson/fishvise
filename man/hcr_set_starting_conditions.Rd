@@ -2,7 +2,7 @@
 \alias{hcr_set_starting_conditions}
 \title{HCR: Set starting condition for stock}
 \usage{
-  hcr_set_starting_conditions(dat_y1, d, ctr)
+hcr_set_starting_conditions(dat_y1, d, ctr)
 }
 \arguments{
   \item{dat_y1}{XXX}
@@ -12,6 +12,6 @@
   \item{ctr}{XXX}
 }
 \description{
-  XXX
+XXX
 }
 

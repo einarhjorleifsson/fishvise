@@ -2,7 +2,7 @@
 \alias{recruit1}
 \title{Hockey stick recruitment model}
 \usage{
-  recruit1(ssb, ctr, reccv)
+recruit1(ssb, ctr, reccv)
 }
 \arguments{
   \item{ssb}{XXX}
@@ -12,6 +12,6 @@
   \item{reccv}{XXX}
 }
 \description{
-  XXX
+XXX
 }
 

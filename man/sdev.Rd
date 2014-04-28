@@ -2,12 +2,12 @@
 \alias{sdev}
 \title{sdev}
 \usage{
-  sdev(x)
+sdev(x)
 }
 \arguments{
   \item{x}{Value}
 }
 \description{
-  Calculates standard deviation from variance
+Calculates standard deviation from variance
 }
 

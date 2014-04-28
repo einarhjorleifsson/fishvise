@@ -2,7 +2,7 @@
 \alias{recruitment}
 \title{Make this an internal function}
 \usage{
-  recruitment(SSB, alpha, beta, sr)
+recruitment(SSB, alpha, beta, sr)
 }
 \arguments{
   \item{SSB}{xxx}
@@ -14,6 +14,6 @@
   \item{sr}{xxx}
 }
 \description{
-  Make this an internal function
+Make this an internal function
 }
 

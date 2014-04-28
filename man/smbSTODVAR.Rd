@@ -4,19 +4,21 @@
 \title{Spring survey (SMB) station list}
 \format{Each year is stored as a separate \emph{data.frame} in the \emph{list}.}
 \source{
-  The object is created and maintained by Höskuldur
-  Björnsson. The original source is found in
-  "/net/hafkaldi/u2/reikn/Splus5/SMB/.RData". It is copied
-  into this library via:
-  \code{attach(attach('/net/hafkaldi/u2/reikn/Splus5/SMB/.RData')
-  save('STODVAR',file='~/data/smbSTODVAR.rda')}
+The object is created and maintained by Höskuldur
+Björnsson. The original source is found in
+"/net/hafkaldi/u2/reikn/Splus5/SMB/.RData". It is copied
+into this library via:
+\code{attach(attach('/net/hafkaldi/u2/reikn/Splus5/SMB/.RData')
+save('STODVAR',file='~/data/smbSTODVAR.rda')}
+}
+\usage{
+Some usage
 }
 \description{
-  A \emph{list} that contains the spring survey station
-  information.
+A \emph{list} that contains the spring survey station
+information.
 }
 \author{
-  Hoskuldur Bjornsson
+Hoskuldur Bjornsson
 }
-\keyword{datasets}
 

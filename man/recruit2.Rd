@@ -2,7 +2,7 @@
 \alias{recruit2}
 \title{Bootstrap model}
 \usage{
-  recruit2(ssb, ssbcut, recmean, rdev)
+recruit2(ssb, ssbcut, recmean, rdev)
 }
 \arguments{
   \item{ssb}{XXX}
@@ -14,6 +14,6 @@
   \item{rdev}{XXX}
 }
 \description{
-  Just a dummy for now
+Just a dummy for now
 }
 

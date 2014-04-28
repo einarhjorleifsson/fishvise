@@ -2,12 +2,12 @@
 \alias{hcr_set_dimensions}
 \title{Initial HCR objects}
 \usage{
-  hcr_set_dimensions(ctr)
+hcr_set_dimensions(ctr)
 }
 \arguments{
   \item{ctr}{Control list}
 }
 \description{
-  XXX
+XXX
 }
 

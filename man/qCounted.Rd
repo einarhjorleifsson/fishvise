@@ -2,9 +2,8 @@
 \alias{qCounted}
 \title{qCounted}
 \usage{
-  qCounted(Lengths, Numbers,
-    col.names = c("fj.maelt", "fj.talid"),
-    id.name = c("synis.id"))
+qCounted(Lengths, Numbers, col.names = c("fj.maelt", "fj.talid"),
+  id.name = c("synis.id"))
 }
 \arguments{
   \item{Lengths}{data.frame containing lengths}
@@ -18,6 +17,6 @@
   default synis.id}
 }
 \description{
-  What it does
+What it does
 }
 

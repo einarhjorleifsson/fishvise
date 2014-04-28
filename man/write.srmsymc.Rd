@@ -2,11 +2,9 @@
 \alias{write.srmsymc}
 \title{write data files to disk for the ADM srmsymc program}
 \usage{
-  write.srmsymc(rby, iba, aR,
-    col_names = c("year", "r", "ssb"), opt_sr_model = 1,
-    opt_sim = 1, opt_pen = 1, opt_age = 1, rba,
-    filename_age = "age.dat", aP, years,
-    align_rectruitment = TRUE)
+write.srmsymc(rby, iba, aR, col_names = c("year", "r", "ssb"),
+  opt_sr_model = 1, opt_sim = 1, opt_pen = 1, opt_age = 1, rba,
+  filename_age = "age.dat", aP, years, align_rectruitment = TRUE)
 }
 \arguments{
   \item{rby}{A list that contains in its first three rows
@@ -51,10 +49,10 @@
   \item{align_rectruitment}{XXX}
 }
 \description{
-  Some details, including link to the function a) running
-  the program and creating the data input
+Some details, including link to the function a) running the
+program and creating the data input
 }
 \author{
-  Einar Hjorleifsson <einar.hjorleifsson
+Einar Hjorleifsson <einar.hjorleifsson
 }
 

@@ -3,3 +3,5 @@
 .RData
 .Rbuildignore
 README.Rmd
+vignettes_back/
+tmptests/

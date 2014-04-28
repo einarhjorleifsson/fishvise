@@ -2,8 +2,8 @@
 \alias{read.mc.par}
 \title{Read key parameter estimates from the srmsymc program}
 \usage{
-  read.mc.par(file = "simpar.dat", path, srno = 1,
-    minSSB = 0, trim = TRUE, longformat = TRUE)
+read.mc.par(file = "simpar.dat", path, srno = 1, minSSB = 0,
+  trim = TRUE, longformat = TRUE)
 }
 \arguments{
   \item{file}{the file name, should not be anything else
@@ -28,8 +28,8 @@
   long format.}
 }
 \description{
-  Reads the fiel \code{simpar.dat} generate by the
-  \code{srmsymc}. Returns a list containing the stochastic
-  and the deterministic estimates.
+Reads the fiel \code{simpar.dat} generate by the
+\code{srmsymc}. Returns a list containing the stochastic
+and the deterministic estimates.
 }
 

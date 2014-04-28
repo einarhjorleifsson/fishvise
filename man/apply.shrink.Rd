@@ -2,7 +2,7 @@
 \alias{apply.shrink}
 \title{apply.shrink}
 \usage{
-  apply.shrink(X, INDICES, FUN = NULL, names, ...)
+apply.shrink(X, INDICES, FUN = NULL, names, ...)
 }
 \arguments{
   \item{X}{x}
@@ -16,6 +16,6 @@
   \item{...}{additionalThings}
 }
 \description{
-  local copy of an old faithful from package geo
+local copy of an old faithful from package geo
 }
 

@@ -2,9 +2,8 @@
 \alias{read.separ}
 \title{Reads 'separable' assessment results}
 \usage{
-  read.separ(path, run, rName = NA, mName = NA,
-    calcSurBio = F, ggFactor = T, Scale = 1000,
-    assYear = NA, retroY = NA)
+read.separ(path, run, rName = NA, mName = NA, calcSurBio = F,
+  ggFactor = T, Scale = 1000, assYear = NA, retroY = NA)
 }
 \arguments{
   \item{path}{Path to the runs, here the 'root' path to the
@@ -30,18 +29,16 @@
   \item{retroY}{The retrospective year}
 }
 \value{
-  A list with \code{data.frame} rby, rbya and rba
+A list with \code{data.frame} rby, rbya and rba
 }
 \description{
-  Some longer text here
+Some longer text here
 }
 \note{
-  If file exist it is simply overwritten without any
-  warning
+If file exist it is simply overwritten without any warning
 }
 \seealso{
-  \code{\link{read.adcam}} for reading adcam model output
-  and \code{\link{read.adapt}} for reading adapt model
-  output
+\code{\link{read.adcam}} for reading adcam model output and
+\code{\link{read.adapt}} for reading adapt model output
 }
 

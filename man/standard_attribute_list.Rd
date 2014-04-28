@@ -2,12 +2,12 @@
 \alias{standard_attribute_list}
 \title{Standard attribute structure}
 \usage{
-  standard_attribute_list()
+standard_attribute_list()
 }
 \description{
-  XXX
+XXX
 }
 \author{
-  Einar Hjorleifsson
+Einar Hjorleifsson
 }
 

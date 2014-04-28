@@ -2,10 +2,9 @@
 \alias{read.rbya}
 \title{Reads results-by-year-and-age}
 \usage{
-  read.rbya(file, format = "rvk", cn = c("xx"),
-    info = FALSE, name_stock = NA, yAss = NA, aR = NA,
-    aP = NA, aF = c(NA, NA), pM = rep(0.25, 14),
-    pF = rep(0.1, 14), Run = NA, Model = NA)
+read.rbya(file, format = "rvk", cn = c("xx"), info = FALSE,
+  name_stock = NA, yAss = NA, aR = NA, aP = NA, aF = c(NA, NA),
+  pM = rep(0.25, 14), pF = rep(0.1, 14), Run = NA, Model = NA)
 }
 \arguments{
   \item{file}{If it does not contain an absolute path, the
@@ -44,7 +43,7 @@
   ..)}
 }
 \description{
-  XXX
+XXX
 }
 \examples{
 file <- paste(path.package("fishvise"),'extdata/resultsbyyearandage',sep='/')

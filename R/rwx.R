@@ -547,7 +547,7 @@ replace.text <- function (txt, char = "_", replchar = ".")
   write(skipun, file = tmpskipanaskra)
   system(paste("chmod u+x", tmpskipanaskra))
   system(tmpskipanaskra)
-  txt <- scan(tmpfile2, what = character(), sep = "\t")
+  txt <- scan(tmpfile2, what = character(), sep = "\t",quiet=TRUE)
   return(txt)
   #print(skipun)
 }
@@ -569,7 +569,7 @@ read.prelude <- function (skr, rownames = F, dots.in.text = T)
   if (nrec == 2) 
     return(NULL)
   collab <- scan(file = skr, what = character(), sep = "\t", 
-                 n = fields[1])
+                 n = fields[1],quiet=TRUE)
   outp <- read.table(skr, sep = "\t", skip = 2, as.is = T, 
                      row.names = NULL, na.strings = "")
   names(outp) <- collab
@@ -617,6 +617,78 @@ write.prelude <- function (data, file = "R.pre", na.replace = "")
       append = T)
   return(invisible(NULL))
 }
+
+#' Reads 'adcam' assessment results
+#' 
+#' Some longer text here
+#' 
+#' @export
+#' @param path Path to the runs, here the 'root' path to the runs.
+#' @param rName Name of the run.
+#' @param mName Name of the model used.
+#' @param calcSurBio Flag, TRUE (default) if survey biomass should be calculated.
+#' @param ggFactor If TRUE (default) rescale prerecruits with M=0.0
+#' @param Scale Convertion of values
+#' @param assYear Assessment year
+#' @param retroY The retrospective year
+#' @param std.names Boolean, if TRUE (default) column names are standardize, if
+#'        FALSE the original names are retained and returned.
+#' @param rec.column Character, name of recruitment column (e.g. "n2", "n3").
+#' @return A list with \code{data.frame} rby, rbya and rba 
+#' @seealso \code{\link{read.separ}} for reading separate model output and \code{\link{read.adapt}} for reading adapt model output
+read.rbx <- function (path,run,rName=NA,mName=NA,calcSurBio=T,ggFactor=T,Scale=1e3,assYear=NA,retroY=NA,
+                      std.names=TRUE) {
+  
+  rbya <- read.table(paste(path,"resultsbyyearandage",sep="/"),header=T,na.strings=c("-1"))
+  rby <- read.table(paste(path,"resultsbyyear",sep="/"),header=T,na.strings=c("-1"))
+  rba <- read.table(paste(path,"resultsbyage",sep="/"),header=T,na.strings=c("-1"))
+  
+  if(!std.names) return(list(rby=rby,rbya=rbya,rba=rba))
+  
+  # cn_rvk: should later be inclusive in the package as binary
+  cn_rvk <- read.table("/home/einarhj/r/Pakkar/fishvise/inst/extdata/cn_rvk.dat",header=T)
+  
+  ##############################################################################
+  # rbya
+  # standardize names:
+  i <- match(names(rbya),cn_rvk$adx)
+  names(rbya) <- cn_rvk$id[i]
+  
+  # start by filling in "missing" columns
+  # if only tuned with one survey (oU1) add a dummy column for second survey
+  #  thinking: potential later rbind of various runs made easier
+  if(!any(match(names(rbya),"oU2"),na.rm=T)) rbya$oU2 <- rbya$pU2 <- rbya$rU2 <- NA
+  
+  # add this even though in vpa-models predicted catch is nonsensical
+  if(!any(match(names(rbya),"pC"),na.rm=T)) {
+    rbya$pC <- NA
+    rbya$rC <- log(rbya$oC/rbya$pC)
+  }
+  
+  # rescale stock in numbers of incoming recruits to numbers at age of recruitment
+  # note here assume that recruitment age no higher than 3
+  if(ggFactor) {
+    rbya$n <- ifelse(rbya$age %in% 1 & is.na(rbya$f),rbya$n*exp(-rbya$m),rbya$n)
+    rbya$n <- ifelse(rbya$age <= 2 & is.na(rbya$f),rbya$n*exp(-rbya$m),rbya$n)
+  }
+  
+  # Scale values
+  rbya$oC <- rbya$oC/Scale
+  rbya$pC <- rbya$pC/Scale
+  rbya$wC <- rbya$wC/Scale
+  rbya$wsto <- rbya$wsto/Scale
+  rbya$wssb <- rbya$wssb/Scale
+  rbya$n  <- rbya$n/Scale
+  
+  
+  rbya$run <- rName
+  rbya$model <- mName
+  rbya$assYear <- assYear
+  
+  return(list(rby=NA,rbya=rbya,rba=NA))
+}
+
+
 
 
 #' Reads 'adcam' assessment results

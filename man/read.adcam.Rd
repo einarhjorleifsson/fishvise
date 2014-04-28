@@ -2,9 +2,8 @@
 \alias{read.adcam}
 \title{Reads 'adcam' assessment results}
 \usage{
-  read.adcam(path, run, rName = NA, mName = NA,
-    calcSurBio = T, ggFactor = T, Scale = 1000,
-    assYear = NA, retroY = NA)
+read.adcam(path, run, rName = NA, mName = NA, calcSurBio = T,
+  ggFactor = T, Scale = 1000, assYear = NA, retroY = NA)
 }
 \arguments{
   \item{path}{Path to the runs, here the 'root' path to the
@@ -30,14 +29,13 @@
   \item{retroY}{The retrospective year}
 }
 \value{
-  A list with \code{data.frame} rby, rbya and rba
+A list with \code{data.frame} rby, rbya and rba
 }
 \description{
-  Some longer text here
+Some longer text here
 }
 \seealso{
-  \code{\link{read.separ}} for reading separate model
-  output and \code{\link{read.adapt}} for reading adapt
-  model output
+\code{\link{read.separ}} for reading separate model output
+and \code{\link{read.adapt}} for reading adapt model output
 }
 

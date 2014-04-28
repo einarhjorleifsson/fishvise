@@ -1,65 +1,77 @@
-adx	id
-year	year
-age	age
-N	N
-Z	Z
-M	M
-F	tF
-CalcCno	pC
-ObsCno	oC
-CatchDiff	rC
-ObsSurveyNr	oU1
-ObsSurveyNr1	oU1
-ObsSurvey2Nr	oU2
-ObsSurveyNr2	oU2
-CalcSurveyNr	pU1
-CalcSurveyNr1	pU1
-CalcSurvey2Nr	pU2
-CalcSurveyNr2	pU2
-SurveyDiff	rU1
-SurveyResiduals1	rU1
-Survey2Diff	rU2
-SurveyResiduals2	rU2
-SurveyDiff2	rU2
-StockWts	wU
-SSBwts	wX
-SSBWeights	wX
-StockWeights	wU
-CatchWeights	wC
-CatchWts	wC
-StockSexmat	xN
-CatchSexmat	xC
-StockMaturity	xN
-SSB	ssb
-annualF	xxx
-F5.10	refF
-calccatch	pY
-SSB	ssb
-OldSSB	cSSB
-CbioR	xxx
-Cbio4.	refB
-Cbio1	tsb
-N1	n1
-N3	r
-N6	n6
-HarvestRatio	hr
-obscatch	oY
-a50	xxx
-CalcSurveybio	pI1
-Obssurveybio	oI1
-CalcSurvey2bio	pI2
-Obssurvey2bio	oI2
-PredN	pN
-FishingYearCatch	qY
-RefF	refF
-CalcCatchIn1000tons	pY
-CatchIn1000tons	oY
-Spawningstock	ssb
-Eggproduction	ssb_egg
-CbioR	xxx
-RefBio1	xxx2
-RefBio2	refB
-PredictedRecruitment	meanR
-Recruitment	r
-CalcSurveyBiomass1	pI1
-ObsSurveyBiomass1	oI1
+adx	id	cn_return
+year	year	TRUE
+age	age	TRUE
+N	n	TRUE
+Z	z	FALSE
+M	m	TRUE
+F	f	TRUE
+CalcCno	pC	TRUE
+ObsCno	oC	TRUE
+CatchDiff	rC	TRUE
+ObsSurveyNr	oU1	TRUE
+ObsSurveyNr1	oU1	TRUE
+ObsSurvey2Nr	oU2	TRUE
+ObsSurveyNr2	oU2	TRUE
+CalcSurveyNr	pU1	TRUE
+CalcSurveyNr1	pU1	TRUE
+CalcSurvey2Nr	pU2	TRUE
+CalcSurveyNr2	pU2	TRUE
+SurveyDiff	rU1	TRUE
+SurveyResiduals1	rU1	TRUE
+Survey2Diff	rU2	TRUE
+SurveyResiduals2	rU2	TRUE
+SurveyDiff2	rU2	TRUE
+StockWts	wsto	TRUE
+SSBwts	wssb	TRUE
+SSBWeights	wssb	TRUE
+StockWeights	wsto	TRUE
+CatchWeights	wC	TRUE
+CatchWts	wC	TRUE
+StockSexmat	matS	TRUE
+CatchSexmat	matC	TRUE
+StockMaturity	matS	TRUE
+SSB	ssb	TRUE
+annualF	fullF	FALSE
+F5.10	refF	TRUE
+F4.7	refF	TRUE
+calccatch	pY	TRUE
+SSB	ssb	TRUE
+OldSSB	ssbC	TRUE
+CbioR	xxx	FALSE
+Cbio4.	refB	TRUE
+Cbio3.	refB	TRUE
+Cbio1	tsb	TRUE
+N1	n1	TRUE
+N3	n3	TRUE
+N6	n6	TRUE
+HarvestRatio	hr	TRUE
+obscatch	oY	TRUE
+a50	xxx	FALSE
+CalcSurveybio	pU1	TRUE
+Obssurveybio	oU1	TRUE
+CalcSurvey2bio	pU2	TRUE
+Obssurvey2bio	oU2	TRUE
+PredN	pN	FALSE
+FishingYearCatch	qY	TRUE
+RefF	refF	TRUE
+CalcCatchIn1000tons	pY	TRUE
+calccatch	pY	TRUE
+CatchIn1000tons	oY	TRUE
+Spawningstock	ssb	TRUE
+Eggproduction	ssbEGG	TRUE
+CbioR	xxx	FALSE
+RefBio1	xxx2	FALSE
+RefBio2	refB	TRUE
+PredictedRecruitment	rMEAN	FALSE
+Recruitment	r	TRUE
+CalcSurveyBiomass1	pU1	TRUE
+ObsSurveyBiomass1	oU1	TRUE
+surveysigma	sU1	TRUE
+SurveylnQ	qU1	TRUE
+SurveyPower	bU1	TRUE
+survey2sigma	sU2	TRUE
+Survey2lnQ	aU2	TRUE
+Survey2Power	bU2	TRUE
+meansel	mS	TRUE
+progsel	pS	TRUE
+sigma	sigma	TRUE

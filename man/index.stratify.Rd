@@ -2,9 +2,8 @@
 \alias{index.stratify}
 \title{Calculates stratified indices}
 \usage{
-  index.stratify(sfile, col.names = c("strata", "v"),
-    std.length = 4, std.width = 17, use.rallarea = TRUE,
-    strata.list, std.cv = 1)
+index.stratify(sfile, col.names = c("strata", "v"), std.length = 4,
+  std.width = 17, use.rallarea = TRUE, strata.list, std.cv = 1)
 }
 \arguments{
   \item{sfile}{data.frame with strata and abundance indices
@@ -25,9 +24,9 @@
   \item{std.cv}{Standard cv}
 }
 \description{
-  Calculate indices by strata. If standardization by tow
-  length is desired use first
-  \code{\link{index.standardize}}. This captures the second
-  part of the function \code{\link{Calc.index}}.
+Calculate indices by strata. If standardization by tow
+length is desired use first
+\code{\link{index.standardize}}. This captures the second
+part of the function \code{\link{Calc.index}}.
 }
 

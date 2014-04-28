@@ -2,9 +2,8 @@
 \alias{index.standardize}
 \title{Standardizes value by tow length}
 \usage{
-  index.standardize(value, towlength, std.length = 4,
-    std.width = 17, to.area = FALSE, min.length,
-    max.length)
+index.standardize(value, towlength, std.length = 4, std.width = 17,
+  to.area = FALSE, min.length, max.length)
 }
 \arguments{
   \item{value}{The value to standardize (e.g. number of
@@ -27,7 +26,7 @@
   twice the standardized tow length}
 }
 \description{
-  Standaridize value of interest. This is equivalent to the
-  first part of the function \code{\link{Calc.index}}.
+Standaridize value of interest. This is equivalent to the
+first part of the function \code{\link{Calc.index}}.
 }
 

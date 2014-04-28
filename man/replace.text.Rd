@@ -2,7 +2,7 @@
 \alias{replace.text}
 \title{Replace characters}
 \usage{
-  replace.text(txt, char = "_", replchar = ".")
+replace.text(txt, char = "_", replchar = ".")
 }
 \arguments{
   \item{txt}{input vector}
@@ -12,8 +12,8 @@
   \item{replchar}{replacement character.}
 }
 \description{
-  \code{replace.text} replaces string with another string.
-  Function was called 'skipta.texta'. In theory could use
-  str_replace instead.
+\code{replace.text} replaces string with another string.
+Function was called 'skipta.texta'. In theory could use
+str_replace instead.
 }
 

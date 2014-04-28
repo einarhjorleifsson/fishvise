@@ -2,7 +2,7 @@
 \alias{str_trim_tab}
 \title{Trim 'tabs' from start and end of string}
 \usage{
-  str_trim_tab(string, side = "both")
+str_trim_tab(string, side = "both")
 }
 \arguments{
   \item{string}{input character vector}
@@ -11,8 +11,8 @@
   (left, right or both)}
 }
 \description{
-  Function is enspired by str_trim function in the stringr
-  package. The str_trim function is for trimming
-  whitespace, here tabs are trimmed.
+Function is enspired by str_trim function in the stringr
+package. The str_trim function is for trimming whitespace,
+here tabs are trimmed.
 }
 

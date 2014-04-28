@@ -1,16 +1,14 @@
-\name{read.adapt}
-\alias{read.adapt}
-\title{Reads 'adapt' assessment results}
+\name{read.rbx}
+\alias{read.rbx}
+\title{Reads 'adcam' assessment results}
 \usage{
-read.adapt(path, run, rName = NA, mName = NA, calcSurBio = F,
-  ggFactor = T, Scale = 1000, assYear = NA, retroY = NA)
+read.rbx(path, run, rName = NA, mName = NA, calcSurBio = T,
+  ggFactor = T, Scale = 1000, assYear = NA, retroY = NA,
+  std.names = TRUE)
 }
 \arguments{
   \item{path}{Path to the runs, here the 'root' path to the
   runs.}
-
-  \item{run}{Name of the \emph{directory} that contains the
-  result.}
 
   \item{rName}{Name of the run.}
 
@@ -27,6 +25,13 @@ read.adapt(path, run, rName = NA, mName = NA, calcSurBio = F,
   \item{assYear}{Assessment year}
 
   \item{retroY}{The retrospective year}
+
+  \item{std.names}{Boolean, if TRUE (default) column names
+  are standardize, if FALSE the original names are retained
+  and returned.}
+
+  \item{rec.column}{Character, name of recruitment column
+  (e.g. "n2", "n3").}
 }
 \value{
 A list with \code{data.frame} rby, rbya and rba
@@ -36,6 +41,6 @@ Some longer text here
 }
 \seealso{
 \code{\link{read.separ}} for reading separate model output
-and \code{\link{read.adcam}} for reading adcam model output
+and \code{\link{read.adapt}} for reading adapt model output
 }
 

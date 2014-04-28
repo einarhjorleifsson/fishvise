@@ -2,7 +2,7 @@
 \alias{hcr_management_effort}
 \title{Effort type management}
 \usage{
-  hcr_management_effort(hrate_hat, ssb_hat, Btrigger)
+hcr_management_effort(hrate_hat, ssb_hat, Btrigger)
 }
 \arguments{
   \item{hrate_hat}{XXX}
@@ -12,6 +12,6 @@
   \item{Btrigger}{XXX}
 }
 \description{
-  XXX
+XXX
 }
 

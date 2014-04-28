@@ -2,8 +2,8 @@
 \alias{run.srmsymc}
 \title{Run srmsymc}
 \usage{
-  run.srmsymc(sr, opt_sen = 1, opt_pen = 1, nits = 100,
-    path, output = FALSE)
+run.srmsymc(sr, opt_sen = 1, opt_pen = 1, nits = 100, path,
+  output = FALSE)
 }
 \arguments{
   \item{sr}{integer. containg the stock-recruitment model}
@@ -23,9 +23,9 @@
   (*.dat) files are returned.}
 }
 \description{
-  Run the ADM srmsymc program
+Run the ADM srmsymc program
 }
 \author{
-  Einar Hjorleifsson <einar.hjorleifsson
+Einar Hjorleifsson <einar.hjorleifsson
 }
 

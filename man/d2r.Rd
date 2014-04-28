@@ -2,7 +2,7 @@
 \alias{d2r}
 \title{Converts lat and lon to statistical squares}
 \usage{
-  d2r(lat, lon = NULL)
+d2r(lat, lon = NULL)
 }
 \arguments{
   \item{lat}{numerical vector or data.frame with columns
@@ -13,16 +13,16 @@
   and 'lon'}
 }
 \value{
-  a vector
+a vector
 }
 \description{
-  \code{d2r} ...
+\code{d2r} ...
 }
 \author{
-  Hoski, documented by Einar
+Hoski, documented by Einar
 }
 \seealso{
-  \code{\link{r2d}} for converting statistical squares to
-  lat and lon
+\code{\link{r2d}} for converting statistical squares to lat
+and lon
 }
 

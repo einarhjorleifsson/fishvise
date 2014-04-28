@@ -2,15 +2,15 @@
 \alias{sen_from_rbya}
 \title{sen from rbya}
 \usage{
-  sen_from_rbya(x)
+sen_from_rbya(x)
 }
 \arguments{
   \item{x}{XXX}
 }
 \description{
-  XXX
+XXX
 }
 \author{
-  Einar Hjorleifsson
+Einar Hjorleifsson
 }
 

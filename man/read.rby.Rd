@@ -2,10 +2,10 @@
 \alias{read.rby}
 \title{Reads results-by-year (sum file)}
 \usage{
-  read.rby(file, format = "rvk",
-    cn = c("year", "r", "refB", "ssb", "oY", "pY", "refF", "hr", "oI1", "pI1", "oI2", "pI2"),
-    info = FALSE, name_stock = NA, yAss = NA, aR = NA,
-    aF = c(NA, NA), Run = NA, Model = NA)
+read.rby(file, format = "rvk", cn = c("year", "r", "refB", "ssb", "oY",
+  "pY", "refF", "hr", "oI1", "pI1", "oI2", "pI2"), info = FALSE,
+  name_stock = NA, yAss = NA, aR = NA, aF = c(NA, NA), Run = NA,
+  Model = NA)
 }
 \arguments{
   \item{file}{If it does not contain an absolute path, the
@@ -38,8 +38,8 @@
   ..)}
 }
 \description{
-  Reads a stock summary file in table format and returns it
-  as a data frame.
+Reads a stock summary file in table format and returns it
+as a data frame.
 }
 \examples{
 file <- paste(path.package("fishvise"),'extdata/resultsbyyear',sep='/')

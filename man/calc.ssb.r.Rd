@@ -2,7 +2,7 @@
 \alias{calc.ssb.r}
 \title{Calculate recruitment}
 \usage{
-  calc.ssb.r(ssb, alpha, beta, sr)
+calc.ssb.r(ssb, alpha, beta, sr)
 }
 \arguments{
   \item{ssb}{x}
@@ -14,6 +14,6 @@
   \item{sr}{sr-type (numerical)}
 }
 \description{
-  xxx
+xxx
 }
 

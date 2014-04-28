@@ -2,8 +2,7 @@
 \alias{mb_gridGMT}
 \title{Gridding data using nearneighbor gmt function}
 \usage{
-  mb_gridGMT(data, square, out.file, I = 0.064, S = 0.128,
-    debug = F)
+mb_gridGMT(data, square, out.file, I = 0.064, S = 0.128, debug = F)
 }
 \arguments{
   \item{data}{The xyz-data}
@@ -21,6 +20,6 @@
   gmt-nearneighbor.}
 }
 \description{
-  XXX
+XXX
 }
 

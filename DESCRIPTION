@@ -20,15 +20,3 @@ LazyData: yes
 Author: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 Maintainer: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>
 License: GPL-2
-Collate:
-    'data.R'
-    'data_surveys.R'
-    'do_ggplot.R'
-    'fishvise.R'
-    'fpress.R'
-    'multibeam.R'
-    'rwx.R'
-    'srmsymc.R'
-    'utilities.R'
-    'utilities_geo.R'
-    'survey_functions.R'

@@ -2,7 +2,7 @@
 \alias{hcr_operating_model}
 \title{Operating model}
 \usage{
-  hcr_operating_model(y, h, ctr, Fmult, nR = 1)
+hcr_operating_model(y, h, ctr, Fmult, nR = 1)
 }
 \arguments{
   \item{y}{XXX}
@@ -16,6 +16,6 @@
   \item{nR}{XXX}
 }
 \description{
-  XXX
+XXX
 }
 
