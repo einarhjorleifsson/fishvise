@@ -9,42 +9,60 @@ rvk2icesxml(rby, FishStock, AssessmentYear, RecruitmentAge, FAge, rba,
   RecruitmentLength = 0)
 }
 \arguments{
-  \item{rby}{A data frame containing stock summary data}
+  \item{rby}{A data frame containing stock summary data.
+  Required column names are: \itemize{ \item \emph{year} -
+  year \item \emph{r} - recruitment \item \emph{bio} -
+  total or reference biomass \item \emph{ssb} - spawning
+  stock biomass \item \emph{y} - yield, \item \emph{f} -
+  fishing mortality. }}
 
-  \item{FishStock}{XXX}
+  \item{FishStock}{A character vector containing stock
+  "name". e.g. "cod-farp", "cod-iceg".}
 
-  \item{AssessmentYear}{XXX}
+  \item{AssessmentYear}{An integer representing assessment
+  year}
 
-  \item{RecruitmentAge}{XXX}
+  \item{RecruitmentAge}{An integer representing recruitment
+  age}
 
-  \item{FAge}{XXX}
+  \item{FAge}{A character vector containg reference fishing
+  moralites, e.g. "F5-10"}
 
-  \item{rba}{data.frame containing yield per recruit input.
-  If missing it is ignored.}
+  \item{rba}{\\code{data.frame} containing yield per
+  recruit input. If missing it is ignored. If supplied
+  required column names are: \itemize{ \item \emph{age} -
+  age \item \emph{M} - natural mortality \item \emph{Mat} -
+  maturity \item \emph{PF} - partial fishing mortality
+  before spawning \item \emph{PM} - partial natural
+  mortality before spawning \item \emph{WeSt} - spawning
+  stock weights \item \emph{f} - fishing mortality \item
+  \emph{WeCa} - catch weights } This part has not been
+  tested yet.}
 
-  \item{Flim}{XXX}
+  \item{Flim}{A numeric value}
 
-  \item{Fpa}{XXX}
+  \item{Fpa}{A numeric value}
 
-  \item{Blim}{XXX}
+  \item{Blim}{A numeric value}
 
-  \item{Bpa}{XXX}
+  \item{Bpa}{A numeric value}
 
-  \item{FMSY}{XXX}
+  \item{FMSY}{A numeric value}
 
-  \item{MSYBtrigger}{XXX}
+  \item{MSYBtrigger}{A numeric value}
 
-  \item{Fmanagement}{XXX}
+  \item{Fmanagement}{A numeric value}
 
-  \item{Bmanagement}{XXX}
+  \item{Bmanagement}{A numeric value}
 
-  \item{RecruitmentLength}{XXX}
+  \item{RecruitmentLength}{A numeric value}
 
-  \item{UnitsWeigths}{XXX}
+  \item{UnitsWeigths}{A character, e.g. "tonnes"}
 
-  \item{UnitsRecruits}{XXX}
+  \item{UnitsRecruits}{A character, e.g. "millions"}
 
-  \item{TypeLandings}{XXX}
+  \item{TypeLandings}{A character, e.g. "official", "ices
+  estimates".}
 }
 \description{
 Converts data.frame to ices xml format for standard graphs.
