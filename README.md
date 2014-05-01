@@ -1,3 +1,3 @@
 ## Fishvise
 
-This package is in development
+This package is in development.
