@@ -4,17 +4,30 @@
 \usage{
 rvk2icesxml(rby, FishStock, AssessmentYear, RecruitmentAge, FAge, rba,
   UnitsWeigths = "tonnes", UnitsRecruits = "millions",
-  TypeLandings = "official", Flim = 0, Fpa = 0, Blim = 0, Bpa = 0,
-  FMSY = 0, MSYBtrigger = 0, Fmanagement = 0, Bmanagement = 0,
-  RecruitmentLength = 0)
+  TypeLandings = "official", Flim, Fpa, Blim, Bpa, FMSY, MSYBtrigger,
+  Fmanagement, Bmanagement, RecruitmentLength, CustomName1, CustomName2,
+  CustomName3, CustomName4, CustomName5, VersionStock, NameSystemProducedFile)
 }
 \arguments{
-  \item{rby}{A data frame containing stock summary data.
-  Required column names are: \itemize{ \item \emph{year} -
-  year \item \emph{r} - recruitment \item \emph{bio} -
-  total or reference biomass \item \emph{ssb} - spawning
-  stock biomass \item \emph{y} - yield, \item \emph{f} -
-  fishing mortality. }}
+  \item{rby}{\code{data.frame} containing stock summary
+  data. Column names besides the Year column which is
+  required can be any of the following: \itemize{ \item
+  \emph{Year} - Year \item \emph{Low_Recruitment} - XX
+  \item \emph{Recruitment} - XXX \item
+  \emph{High_Recruitment} - XXX \item \emph{Low_TBiomass} -
+  XXX \item \emph{TBiomass} - XXX \item
+  \emph{High_TBiomass} - XXX \item \emph{Low_SSB} - XXX
+  \item \emph{SSB} - XXX \item \emph{High_SSB} - XXX \item
+  \emph{Catches} - XXX \item \emph{Landings} - XXX \item
+  \emph{Discards} - XXX \item \emph{IBC} - XXX \item
+  \emph{Unallocated_Removals} - XXX \item \emph{YieldSSB} -
+  XXX \item \emph{Low_F} - XXX \item \emph{F} - XXX \item
+  \emph{High_F} - XXX \item \emph{F_Landings} - XXX \item
+  \emph{F_Discards} - XXX \item \emph{F_IBC} - XXX \item
+  \emph{F_Unallocated} - XXX \item \emph{SoP} - XXX \item
+  \emph{Custom1} - XXX \item \emph{Custom2} - XXX \item
+  \emph{Custom3} - XXX \item \emph{Custom4} - XXX \item
+  \emph{Custom5} - XXX }}
 
   \item{FishStock}{A character vector containing stock
   "name". e.g. "cod-farp", "cod-iceg".}
@@ -28,16 +41,19 @@ rvk2icesxml(rby, FishStock, AssessmentYear, RecruitmentAge, FAge, rba,
   \item{FAge}{A character vector containg reference fishing
   moralites, e.g. "F5-10"}
 
-  \item{rba}{\\code{data.frame} containing yield per
-  recruit input. If missing it is ignored. If supplied
-  required column names are: \itemize{ \item \emph{age} -
-  age \item \emph{M} - natural mortality \item \emph{Mat} -
-  maturity \item \emph{PF} - partial fishing mortality
-  before spawning \item \emph{PM} - partial natural
-  mortality before spawning \item \emph{WeSt} - spawning
-  stock weights \item \emph{f} - fishing mortality \item
-  \emph{WeCa} - catch weights } This part has not been
-  tested yet.}
+  \item{rba}{\code{data.frame} containing yield per recruit
+  input. If missing it is ignored. Column names besides the
+  Age column which is required can be any of the following:
+  \itemize{ \item \emph{Age} - age \item \emph{M} - natural
+  mortality \item \emph{Mat} - maturity \item \emph{PF} -
+  partial fishing mortality before spawning \item \emph{PM}
+  - partial natural mortality before spawning \item
+  \emph{WeSt} - spawning stock weights \item \emph{F} -
+  selection pattern \item \emph{WeCa} - catch weights \item
+  \emph{Fd} - selection pattern of discards \item
+  \emph{WeCad} - discard catch weights \item \emph{Fi} -
+  selection pattern of industrial waste \item \emph{WeCai}
+  - industrial catch weights }}
 
   \item{Flim}{A numeric value}
 
@@ -57,16 +73,47 @@ rvk2icesxml(rby, FishStock, AssessmentYear, RecruitmentAge, FAge, rba,
 
   \item{RecruitmentLength}{A numeric value}
 
-  \item{UnitsWeigths}{A character, e.g. "tonnes"}
+  \item{UnitsWeigths}{A character, expect any one of
+  "kilograms", "tonnes", "thousand tonnes", "million
+  tonnes"}
 
-  \item{UnitsRecruits}{A character, e.g. "millions"}
+  \item{UnitsRecruits}{A character, expect any one of
+  "thousands", "millions", "billions"}
 
   \item{TypeLandings}{A character, e.g. "official", "ices
   estimates".}
+
+  \item{CustomName1}{XXX}
+
+  \item{CustomName2}{XXX}
+
+  \item{CustomName3}{XXX}
+
+  \item{CustomName4}{XXX}
+
+  \item{CustomName5}{XXX}
+
+  \item{VersionStock}{XXX}
+
+  \item{NameSystemProducedFile}{XXX}
 }
 \description{
 Converts data.frame to ices xml format for standard graphs.
-Note that currently takes only data by year. Need to
-implement for the yield per recruit data.
+The function is a brute force, inefficient and unelegant
+coding. The primary aim was just to get something
+operational for those living in the R environment.
+
+The current version of the function does not have any error
+checking on the input data.
+
+This function and updates resides in the fishvise-package
+located in the authors github repository. The package can
+be installed by the following R-commands:
+\code{library(devtools)}
+\code{install_github("fishvise","einarhjorleifsson")}
+\code{library(fishvise)}
+}
+\author{
+einar.hjorleifsson
 }
 
