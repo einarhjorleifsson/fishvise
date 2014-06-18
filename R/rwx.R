@@ -225,7 +225,7 @@ read.rbya <- function (file,
 #' @description Reads a file of the .sen format (Aberdeen format) and creates a
 #' \code{data.frame}. Additional informations are stored as
 #' attributes.
-#' @author Einar Horleifsson <einar.hjorleifsson@gmail.com>
+#' @author Einar Horleifsson <einar.hjorleifsson@@gmail.com>
 #' 
 #' @export
 #' 
@@ -410,63 +410,6 @@ rvk2flr <- function(rbx, sName="nn", sDesc="none",pf=0,pm=0,cF1=5,cF2=10) {
   return(x)
 }
 
-#' @title sen from rbya
-#' 
-#' @description XXX
-#' 
-#' @author Einar Hjorleifsson
-#' 
-#' @export
-#' 
-#' @param x XXX
-
-sen_from_rbya <- function(x) {
-  value <- NULL
-  # estimating sen
-  file <- paste(path.package("fishvise"),"extdata/resultsbyyearandage",sep="/")
-  rbya <- read.rbya(file)
-  i <- rbya$year %in% c(1985:2012) & rbya$age %in% 3:14
-  x <- rbya[i ,c("year","age","tF","wC","wX","xN")]
-  x$wC <- x$wC/1e3
-  x$wX <- x$wX/1e3
-  
-  tF <- ddply(x[x$age %in% 5:10,],"year",summarise,refF=mean(tF))
-  x <- join(x,tF)
-  x$sF <- x$tF/x$refF
-  
-  d <- melt(x[,c("year","age","sF","wC","wX","xN")],id.vars=c("year","age"))
-  d <- ddply(d,c("variable","age"),summarise,ave=mean(value,na.rm=T),cv=sqrt(var(value,na.rm=T))/ave)
-  
-  nFleets <- 1
-  fleet_Fs <- matrix(c(5,10),ncol=1,nrow=2)
-  colnames(fleet_Fs) <- "sF"
-  fleet_Fs_names <- colnames(fleet_Fs)
-  weight_names <- "wC"
-  
-  ages <- c(3:14)
-  sel <- cvsel <- wgt <- cvwgt <- matrix(NA,nrow=length(ages),ncol=nFleets)
-  x <- d
-  names(x) <- c("id","age","value","cv")
-  for (i in 1:nFleets) {
-    x1 <- x[x$id %in% fleet_Fs_names[i],]
-    x1$value <- x1$value/mean(x1$value[x1$age %in% c(fleet_Fs[1,i]:fleet_Fs[2,i])])
-    sel[,i] <- x1[,'value']
-    cvsel[,i] <- x1[,'cv']
-    x1 <- x[x$id %in% weight_names[i],]
-    wgt[,i] <- x1[,"value"]
-    cvwgt[,i] <- x1[,"value"]
-  }
-  bio <- cvbio <- matrix(NA,nrow=length(ages),ncol=3)
-  bio[,1]   <- 0.2
-  bio[,2]   <- x[x$id %in% 'xN','value']
-  bio[,3]   <- x[x$id %in% 'wX','value']
-  cvbio[,1] <- 0.0
-  cvbio[,2] <- x[x$id %in% 'xN','cv']
-  cvbio[,3] <- x[x$id %in% 'wX','cv']
-  
-  cat_age.dat("age.dat",1,0,0,sel,cvsel,wgt,cvwgt,bio,cvbio) 
-}
-
 # Stuff from the surbar package
 
 
@@ -617,78 +560,6 @@ write.prelude <- function (data, file = "R.pre", na.replace = "")
       append = T)
   return(invisible(NULL))
 }
-
-#' Reads 'adcam' assessment results
-#' 
-#' Some longer text here
-#' 
-#' @export
-#' @param path Path to the runs, here the 'root' path to the runs.
-#' @param rName Name of the run.
-#' @param mName Name of the model used.
-#' @param calcSurBio Flag, TRUE (default) if survey biomass should be calculated.
-#' @param ggFactor If TRUE (default) rescale prerecruits with M=0.0
-#' @param Scale Convertion of values
-#' @param assYear Assessment year
-#' @param retroY The retrospective year
-#' @param std.names Boolean, if TRUE (default) column names are standardize, if
-#'        FALSE the original names are retained and returned.
-#' @param rec.column Character, name of recruitment column (e.g. "n2", "n3").
-#' @return A list with \code{data.frame} rby, rbya and rba 
-#' @seealso \code{\link{read.separ}} for reading separate model output and \code{\link{read.adapt}} for reading adapt model output
-read.rbx <- function (path,run,rName=NA,mName=NA,calcSurBio=T,ggFactor=T,Scale=1e3,assYear=NA,retroY=NA,
-                      std.names=TRUE) {
-  
-  rbya <- read.table(paste(path,"resultsbyyearandage",sep="/"),header=T,na.strings=c("-1"))
-  rby <- read.table(paste(path,"resultsbyyear",sep="/"),header=T,na.strings=c("-1"))
-  rba <- read.table(paste(path,"resultsbyage",sep="/"),header=T,na.strings=c("-1"))
-  
-  if(!std.names) return(list(rby=rby,rbya=rbya,rba=rba))
-  
-  # cn_rvk: should later be inclusive in the package as binary
-  cn_rvk <- read.table("/home/einarhj/r/Pakkar/fishvise/inst/extdata/cn_rvk.dat",header=T)
-  
-  ##############################################################################
-  # rbya
-  # standardize names:
-  i <- match(names(rbya),cn_rvk$adx)
-  names(rbya) <- cn_rvk$id[i]
-  
-  # start by filling in "missing" columns
-  # if only tuned with one survey (oU1) add a dummy column for second survey
-  #  thinking: potential later rbind of various runs made easier
-  if(!any(match(names(rbya),"oU2"),na.rm=T)) rbya$oU2 <- rbya$pU2 <- rbya$rU2 <- NA
-  
-  # add this even though in vpa-models predicted catch is nonsensical
-  if(!any(match(names(rbya),"pC"),na.rm=T)) {
-    rbya$pC <- NA
-    rbya$rC <- log(rbya$oC/rbya$pC)
-  }
-  
-  # rescale stock in numbers of incoming recruits to numbers at age of recruitment
-  # note here assume that recruitment age no higher than 3
-  if(ggFactor) {
-    rbya$n <- ifelse(rbya$age %in% 1 & is.na(rbya$f),rbya$n*exp(-rbya$m),rbya$n)
-    rbya$n <- ifelse(rbya$age <= 2 & is.na(rbya$f),rbya$n*exp(-rbya$m),rbya$n)
-  }
-  
-  # Scale values
-  rbya$oC <- rbya$oC/Scale
-  rbya$pC <- rbya$pC/Scale
-  rbya$wC <- rbya$wC/Scale
-  rbya$wsto <- rbya$wsto/Scale
-  rbya$wssb <- rbya$wssb/Scale
-  rbya$n  <- rbya$n/Scale
-  
-  
-  rbya$run <- rName
-  rbya$model <- mName
-  rbya$assYear <- assYear
-  
-  return(list(rby=NA,rbya=rbya,rba=NA))
-}
-
-
 
 
 #' Reads 'adcam' assessment results

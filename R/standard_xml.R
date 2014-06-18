@@ -1,22 +1,13 @@
+#  Problem The ICSE System does not accept mat in rba
 #' @title rvk2icesxml
 #' 
 #' @description Converts data.frame to ices xml format for standard graphs. The
-#' function is a brute force, inefficient and unelegant coding. The primary
-#' aim was just to get something operational for those living in the R environment.
-#' 
-#' The current version of the function does not have any error checking on the input data.
-#' 
-#' This function and updates resides in the fishvise-package located in the authors
-#' github repository. The package can be installed by the following R-commands:
-#' \code{library(devtools)}
-#' \code{install_github("fishvise","einarhjorleifsson")}
-#' \code{library(fishvise)}
-#' 
-#' @author einar.hjorleifsson@gmail.com
+#' function is a brute force coding and does not have any error checking on the
+#' input data.
 #' 
 #' @export
 #' 
-#' @param rby \code{data.frame} containing stock summary data. Column names
+#' @param rby A data frame containing stock summary data. Column names
 #' besides the Year column which is required can be any of the following:
 #' \itemize{
 #'  \item \emph{Year} - Year
@@ -53,9 +44,8 @@
 #' @param AssessmentYear An integer representing assessment year
 #' @param RecruitmentAge An integer representing recruitment age
 #' @param FAge A character vector containg reference fishing moralites, e.g. "F5-10"
-#' @param rba \code{data.frame} containing yield per recruit input. If missing it is
-#' ignored. Column names besides the Age column which is required can be any of
-#' the following:
+#' @param rba \\code{data.frame} containing yield per recruit input. If missing it is
+#' ignored. If supplied required column names are:
 #' \itemize{
 #'  \item \emph{Age} - age
 #'  \item \emph{M} - natural mortality
@@ -79,24 +69,24 @@
 #' @param Fmanagement A numeric value
 #' @param Bmanagement A numeric value
 #' @param RecruitmentLength A numeric value
-#' @param UnitsWeigths A character, expect any one of "kilograms", "tonnes",
-#' "thousand tonnes", "million tonnes" 
-#' @param UnitsRecruits A character, expect any one of "thousands", "millions",
-#' "billions"
+#' @param UnitsWeigths A character, expect any one of "Kilograms", "Tonnes",
+#' "Thousand tonnes", "Million tonnes" 
+#' @param UnitsRecruits A character, expect any one of "Thousands", "Millions",
+#' "Billions"
 #' @param TypeLandings A character, e.g. "official", "ices estimates".
-#' @param CustomName1 XXX
-#' @param CustomName2 XXX
-#' @param CustomName3 XXX
-#' @param CustomName4 XXX
-#' @param CustomName5 XXX
+#' @param Custom1 XXX
+#' @param Custom2 XXX
+#' @param Custom3 XXX
+#' @param Custom4 XXX
+#' @param Custom5 XXX
 #' @param VersionStock XXX
 #' @param NameSystemProducedFile XXX
 rvk2icesxml <- function(rby,FishStock,AssessmentYear,RecruitmentAge,FAge,rba,UnitsWeigths="tonnes",
                         UnitsRecruits="millions",TypeLandings="official",
                         Flim,Fpa,Blim,Bpa,FMSY,MSYBtrigger,
                         Fmanagement,Bmanagement,RecruitmentLength,
-                        CustomName1,CustomName2,CustomName3,
-                        CustomName4,CustomName5,
+                        Custom1,Custom2,Custom3,
+                        Custom4,Custom5,
                         VersionStock,NameSystemProducedFile)
 {
   
@@ -155,13 +145,17 @@ rvk2icesxml <- function(rby,FishStock,AssessmentYear,RecruitmentAge,FAge,rba,Uni
     if(any(match(rby_names,"F_Discards"),na.rm=T)) x <- paste0(x,"<F_Discards>",rby$F_Discards[i],"</F_Discards>\n")
     if(any(match(rby_names,"F_IBC"),na.rm=T)) x <- paste0(x,"<F_IBC>",rby$F_IBC[i],"</F_IBC>\n")
     if(any(match(rby_names,"F_Unallocated"),na.rm=T)) x <- paste0(x,"<F_Unallocated>",rby$F_Unallocated[i],"</F_Unallocated>\n")
-    
     if(any(match(rby_names,"SoP"),na.rm=T)) x <- paste0(x,"<SoP>",rby$SoP[i],"</SoP>\n")
-    if(any(match(rby_names,"Custom1"),na.rm=T)) x <- paste0(x,"<Custom1>",rby$Custom1[i],"</Custom1>\n")
-    if(any(match(rby_names,"Custom2"),na.rm=T)) x <- paste0(x,"<Custom2>",rby$Custom2[i],"</Custom2>\n")
-    if(any(match(rby_names,"Custom3"),na.rm=T)) x <- paste0(x,"<Custom3>",rby$Custom3[i],"</Custom3>\n")
-    if(any(match(rby_names,"Custom4"),na.rm=T)) x <- paste0(x,"<Custom4>",rby$Custom4[i],"</Custom4>\n")
-    if(any(match(rby_names,"Custom5"),na.rm=T)) x <- paste0(x,"<Custom5>",rby$Custom5[i],"</Custom5>\n")
+    if(!missing(Custom1))
+      if(any(match(rby_names,Custom1),na.rm=T)) x <- paste0(x,"<Custom1>",rby[i,Custom1],"</Custom1>\n")
+    if(!missing(Custom2))
+      if(any(match(rby_names,Custom2),na.rm=T)) x <- paste0(x,"<Custom2>",rby[i,Custom2],"</Custom2>\n")
+    if(!missing(Custom3))
+      if(any(match(rby_names,Custom3),na.rm=T)) x <- paste0(x,"<Custom3>",rby[i,Custom3],"</Custom3>\n")
+    if(!missing(Custom4))
+      if(any(match(rby_names,Custom4),na.rm=T)) x <- paste0(x,"<Custom4>",rby[i,Custom4],"</Custom4>\n")
+    if(!missing(Custom5))
+      if(any(match(rby_names,Custom5),na.rm=T)) x <- paste0(x,"<Custom5>",rby[i,Custom5],"</Custom5>\n")
     
     x <- paste0(x,"</FishData>\n")
     if (i == 1) {
@@ -181,11 +175,12 @@ rvk2icesxml <- function(rby,FishStock,AssessmentYear,RecruitmentAge,FAge,rba,Uni
       x <- "<Sensitivity_Data>"
       x <- paste0(x,"<Age>",rba$Age[i],"</Age>\n")
       x <- paste0(x,"<M>",rba$M[i],"</M>\n")
+      x <- paste0(x,"<Mat>",rba$Mat[i],"</Mat>\n")
       x <- paste0(x,"<PF>",rba$PF[i],"</PF>\n")
       x <- paste0(x,"<PM>",rba$PM[i],"</PM>\n")
       x <- paste0(x,"<WeSt>",rba$WeSt[i],"</WeSt>\n")
       x <- paste0(x,"<F>",rba$F[i],"</F>\n")
-      x <- paste0(x,"<WeCa>",rba$M[i],"</WeCa>\n")
+      x <- paste0(x,"<WeCa>",rba$WeCa[i],"</WeCa>\n")
       if(any(match(rba_names,"Fd"),na.rm=T)) x <- paste0(x,"<Fd>",rba$Fd[i],"</Fd>\n")
       if(any(match(rba_names,"WeCad"),na.rm=T)) x <- paste0(x,"<WeCad>",rba$WeCad[i],"</WeCad>\n")
       if(any(match(rba_names,"Fi"),na.rm=T)) x <- paste0(x,"<Fi>",rba$Fi[i],"</Fi>\n")

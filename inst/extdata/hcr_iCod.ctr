@@ -2,13 +2,13 @@
 0    # a1 - first age
 14   # a2 - last (plus group) age
 2011 # y1 - first year of simulation (normally the assessment year)
-2050 # y2 - last year of simulation
-1000    # iter - numer of iterations
+2020 # y2 - last year of simulation
+99   # iter - numer of iterations (usually something larger than 999)
 5    # f1 - lower age in fishing mortality calculation
 10   # f2 - upper age in fishing mortality calculation
 1    # nR - number age classes with unknown recruits
-170  # tac_y1 - the TAC in the advisiory year
-180  # tac_y2 - the TAC in the year following the advisory year
+170  # tac_y1 - the TAC in the advisory year [check this]
+180  # tac_y2 - the TAC in the year following the advisory year [and this]
 1    # y1Bias - Stock assessment bias in the first year
 0.32 # r_cv - recruitment cv
 0.00 # r_rho - recruitment autocorrelation

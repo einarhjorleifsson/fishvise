@@ -1,6 +1,6 @@
 #' @title HCR - Read control file
 #'
-#' @description XXX
+#' @description Reads a simple text file and returns a list
 #' 
 #' @export
 #' 
@@ -146,10 +146,9 @@ hcr_set_wgtErrors <- function(d,ctr)
              dim=c(n_years,  n_iters))
   
   for (y in 2:n_years) x[y,] <- ctr$w_rho * x[y-1,] + sqrt(1 - ctr$w_rho^2) * x[y,]
-  x <- ctr$w_cv * x
   
   for (a in 1:n_ages) {
-    for (h in 1:n_hrates) d[a,,h,] <- x
+    for (h in 1:n_hrates) d[a,,h,] <- x * ctr$cW_cv[a]
   }
   
   return(d)
@@ -629,7 +628,7 @@ hcr_management_bio <- function(y,h,bio,ssb,ctr)
 #' @param ctr Control file
 hcr_summarise_data <- function(X, ctr) {
   sY <- melt(colSums(X$C * X$cW))
-  sS <- melt(colSums(X$N * exp(- (X$pM + X$pF * X$tF)) * X$sW * X$mat))
+  sS <- melt(colSums(X$N * exp(- (X$pM * X$M + X$pF * X$tF)) * X$sW * X$mat))
   sB <- melt(colSums(X$N * X$bW * X$selB))
   R <- melt(drop(X$N[1,,,]))
   Fbar <- melt(colMeans(X$tF[(ctr$f1+1):(ctr$f2+1),,,]))

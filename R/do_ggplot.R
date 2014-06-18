@@ -8,7 +8,7 @@
 #' @param d xx
 #' @export 
 
-do.ggplot <- function(x,d) {
+do_ggplot <- function(x,d) {
   q05 <- q10 <- q16 <- q50 <- q84 <- q90 <- q95 <- value <- variable <- NULL
   gg.plot <- ggplot(x,aes(variable)) +  
     geom_ribbon(aes(ymin=q05,ymax=q95),fill='grey',alpha=1/2) +

@@ -2,7 +2,6 @@
 #' 
 #' @description A little helper function for reading the mb-database
 #' 
-#' @export 
 #' 
 #' @param query The sql query
 #' @param dbname The SQLite database to connect to
@@ -26,7 +25,6 @@ mb_sql <- function(query, dbname="/net/hafkaldi/u1/mb/prj/2013_11topovise/dbase/
 #' 
 #' @description XXX
 #' 
-#' @export
 #' 
 #' @param data The xyz-data
 #' @param square The square to limit the gridding to
@@ -53,7 +51,6 @@ mb_gridGMT <- function(data,square,out.file,I=0.064,S=0.128,debug=F) {
 #' @title Set the limits for small statistical squares
 #' 
 #' @description May not be of any bloody use
-#' @export
 #' 
 #' @param sr The small statistical square
 

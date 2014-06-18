@@ -269,6 +269,7 @@ iconvDF <- function(data,from="ISO8859-1",to="UTF-8", ...) {
 #'
 #' @export
 #' 
+#' 
 #' @param x A vector containing dates
 
 date_2_qyear <- function(x) 

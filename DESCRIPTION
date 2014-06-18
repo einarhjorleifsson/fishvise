@@ -8,10 +8,10 @@ VignetteBuilder: knitr
 Depends:
     plyr,
     stringr,
+    lubridate,
     reshape2,
     ggplot2,
-    fjolst,
-    geo
+    fjolst
 Suggests:
     knitr,
     FLCore,
