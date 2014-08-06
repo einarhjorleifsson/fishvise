@@ -1,35 +1,5 @@
-#' @title Standard attribute structure
-#' 
-#' @description XXX
-#' 
-#' @author Einar Hjorleifsson
-#' 
-#' @export
-#' 
-#' 
-standard_attribute_list <- function() {
-  
-  time <- rep(NA,6)
-  names(time) <- c("y1","y2","aR","a1","a2","aP")
-  
-  units_y <- rep(NA,7)
-  names(units_y) <- c("r","ssb","tsb","tYo","hYo","dYo","iYo")
-  
-  mort <- matrix(NA,nrow=2,ncol=4)
-  colnames(mort) <- c("tF","hF","dF","iF")
-  rownames(mort) <- c("a1","a2")
-  
-  fleets <- rep(NA,4)
-  names(fleets) <- c("total","human","discard","industrial")
-  
-  yAss <- NA
-  yAss <- "Assessment year"
-  
-  x <- list(class2=NA,creator=NA,name_stock="nn",fleets=fleets,time=time,
-            mort=mort,pM=NA,pF=NA,units_y=units_y,Run=NA,Model=NA,yAss=yAss)
-  
-  return(x)
-}
+################################################################################
+# Read Results By Year
 
 #' @title Reads results-by-year (sum file)
 #' 
@@ -56,13 +26,13 @@ standard_attribute_list <- function() {
 #' @examples
 #' 
 #' file <- paste(path.package("fishvise"),'extdata/resultsbyyear',sep='/')
-#' read.rby(file)
+#' read_rby(file)
 #' 
 #' file <- paste(path.package("fishvise"),'extdata/NSH.sum',sep='/')
-#' read.rby(file,format="abd")
+#' read_rby(file,format="abd")
 #' 
 
-read.rby <- function (file,
+read_rby <- function (file,
                       format="rvk",
                       cn=c("year","r","refB","ssb","oY","pY","refF","hr","oI1","pI1","oI2","pI2"),
                       info=FALSE,
@@ -75,6 +45,7 @@ read.rby <- function (file,
   if(!file.exists(file)) stop(paste("file",file,"not found"))
   
   # 2.a Read "rvk" format
+  ## Make a separate subfunction read_rby_rkv
   if(format == "rvk") {
     x <- read.table(file,header=TRUE,na.strings=c("-1","0"))
     # Change names to standard names
@@ -83,10 +54,22 @@ read.rby <- function (file,
   }
   
   # 2.b Read "abd" format
+  ## Make a separate subfunction read_rby_adb
   if(format == "abd") {
     x <- read.table(file,skip=27,stringsAsFactors=FALSE)
     names(x) <- c("year","r","ssb","tsb","tYo","hYo","dYo","iYo","tF","hF","dF","iF")
     x <- x[,c(1,2,4,3,5:ncol(x))]
+  }
+  
+  # 2.c. Read "ICES" format
+  ## Make a separated subfunction read_rby_ices
+  #   Note: Have the old and the new format
+  if(format == "ices") {
+  }
+  
+  # 2.d READ "sam" format
+  if(format == "sam") {
+    x <- read_fit_sam(file, reduced=FALSE)
   }
   
   # 3.
@@ -97,7 +80,7 @@ read.rby <- function (file,
   } else {
     y <- standard_attribute_list()
     y$class2 <- "rby"
-    y$creator <- "fishvise::read.rby"
+    y$creator <- "fishvise::read_rby"
     y$name_stock <- name_stock
     
     if(format == "rvk") {
@@ -131,6 +114,65 @@ read.rby <- function (file,
   }
 }
 
+
+#  @title read_rby_rvk
+
+#  @title read_rby_abd
+
+#  @title read_rby_ices
+
+#  @title read_rby_tasac
+
+
+
+
+
+################################################################################
+# Read Results By Year - support functions
+
+
+
+
+
+#' @title Standard attribute structure
+#' 
+#' @description XXX
+#' 
+#' @author Einar Hjorleifsson
+#' 
+#' @export
+#' 
+#' 
+standard_attribute_list <- function() {
+  
+  time <- rep(NA,6)
+  names(time) <- c("y1","y2","aR","a1","a2","aP")
+  
+  units_y <- rep(NA,7)
+  names(units_y) <- c("r","ssb","tsb","tYo","hYo","dYo","iYo")
+  
+  mort <- matrix(NA,nrow=2,ncol=4)
+  colnames(mort) <- c("tF","hF","dF","iF")
+  rownames(mort) <- c("a1","a2")
+  
+  fleets <- rep(NA,4)
+  names(fleets) <- c("total","human","discard","industrial")
+  
+  yAss <- NA
+  yAss <- "Assessment year"
+  
+  x <- list(class2=NA,creator=NA,name_stock="nn",fleets=fleets,time=time,
+            mort=mort,pM=NA,pF=NA,units_y=units_y,Run=NA,Model=NA,yAss=yAss)
+  
+  return(x)
+}
+
+
+
+
+################################################################################
+# Read results by year and age
+
 #' @title Reads results-by-year-and-age
 #' 
 #' @description XXX
@@ -158,10 +200,10 @@ read.rby <- function (file,
 #' @examples
 #' 
 #' file <- paste(path.package("fishvise"),'extdata/resultsbyyearandage',sep='/')
-#' read.rbya(file)
+#' read_rbya(file)
 #' 
 
-read.rbya <- function (file,
+read_rbya <- function (file,
                       format="rvk",
                       cn=c("xx"),
                       info=FALSE,
@@ -181,7 +223,12 @@ read.rbya <- function (file,
     #x <- x[,cn]
   }
   
-  # 2.b Read "xxx" format
+  # 2.b Read "sam" format
+  if (format == "sam") {
+    x <- read_rbya_sam(read_fit_sam(file))
+    
+  }
+  
   
   # 3.
   if(!info) {
@@ -191,7 +238,7 @@ read.rbya <- function (file,
   } else {
     y <- standard_attribute_list()
     y$class2 <- "rbya"
-    y$creator <- "fishvise::read.rbya"
+    y$creator <- "fishvise::read_rbya"
     y$name_stock <- name_stock
     
     if(format == "rvk") {
@@ -220,6 +267,13 @@ read.rbya <- function (file,
 }
 
 
+
+
+
+
+
+
+
 #' @title Read .sen file
 #' 
 #' @description Reads a file of the .sen format (Aberdeen format) and creates a
@@ -233,7 +287,7 @@ read.rbya <- function (file,
 #' @param pM vector containing proportional natural mortality before spawning
 #' @param pF vector containing proportional fishing mortality before spawning
 
-read.sen <- function(file,pM,pF) {
+read_sen <- function(file,pM,pF) {
   
   if(missing(file)) stop('file must be specified') 
   if (!file.exists(file)) stop(paste('SEN file',file,'not found'))
@@ -320,7 +374,7 @@ read.sen <- function(file,pM,pF) {
   d <- join(d,cn_keys$abd)
   d <- d[,c("id","age","value","cv")]
   
-  y$creator= "created from function fishvise:::read.sen"
+  y$creator= "created from function fishvise::read_sen"
 
   # create "elements"
   
@@ -329,86 +383,7 @@ read.sen <- function(file,pM,pF) {
 
 
 
-#' @title Convert reykjavik to flr
-#' 
-#' @description xx
-#' 
-#' @export
-#' 
-#' @param rbx rbx object
-#' @param sName character. Name of stock
-#' @param sDesc character. Some description
-#' @param pf XX
-#' @param pm XX
-#' @param cF1 XX
-#' @param cF2 XX
-#' 
-rvk2flr <- function(rbx, sName="nn", sDesc="none",pf=0,pm=0,cF1=5,cF2=10) {
-  
-  rbya <- rbx$rbya
-  names(rbya) <- c("year","age","catch.n","catch.wt","stock.wt","stock1.wt",
-                   "mat","stock.n","z","harvest","m","Chat","rC","Uobs","Uhat",
-                   "Ures","U2obs","U2hat","U2res","run","model","assYear")
-  
-  a1 <- min(rbya$age)
-  a2 <- max(rbya$age)
-  nAge <- length(a1:a2)
-  
-  y1 <- min(rbya$year)
-  y2 <- max(rbya$year)
-  
-  rbya$catch.wt <- ifelse(rbya$catch.wt== -1,0,rbya$catch.wt)
-  rbya$stock.wt <- ifelse(rbya$stock.wt== -1,0,rbya$stock.wt)
-  #rbya$catch.n  <- ifelse(rbya$catch.n==  -1,0,rbya$catch.n)
-  rbya$harvest  <- ifelse(rbya$harvest==  -1,0,rbya$harvest)
-  #rbya$m <- ifelse(rbya$age %in% c(1,2),0.0001,rbya$m)
-  #rbya$mat <- ifelse(rbya$age %in% c(1,2) | is.na(rbya$mat),0,rbya$mat)
-  #rbya <- rbya[rbya$year %in% c(1955:2012) & rbya$age %in% c(3:15),]
-  #rbya <- rbya[rbya$year %in% c(1985:2012) & rbya$age %in% c(3:15),]
-  
-  rby <- rbx$rby
-  #rby <- rby[rby$year %in% c(1955:2012),]
-  #rby <- rby[rby$year %in% c(1985:2012),]
-  # convert rbyaa to FLQuants
-  
-  x <- FLQuants()
-  for (i in 3:17)
-  {
-    df <- rbya[,c(1,2,i)]
-    nome <- names(rbya[i])
-    names(df)[3] <- 'data'
-    x[[nome]] <- as.FLQuant(df)
-  }
-  
-  
-  x <- FLStock(name = sName, desc = sDesc,
-               catch.n = x$catch.n,
-               catch.wt = x$catch.wt,
-               landings.n = x$catch.n,
-               landings.wt = x$catch.wt,
-               stock.n=x$stock.n,
-               stock.wt = x$stock.wt,
-               m = x$m,
-               mat = x$mat,
-               harvest=x$harvest)
-  
-  catch(x) <- rby$oY
-  discards.n(x) <- 0
-  discards.wt(x) <- 0
-  discards(x) <- 0
-  landings(x) <- rby$oY
-  
-  if(length(pf) ==  1) pf <- rep(pf,nAge)
-  harvest.spwn(x) <- pf
-  
-  if(length(pm) ==  1) pm <- rep(pm,nAge)
-  m.spwn(x) <- pm
-  
-  #units(x)[1:17] <- as.list(c(rep(c("tonnes","thousands","kg"),4),
-  #                            "NA", "NA", "f", "NA", "NA"))
-  range(x) <- c(a1,a2,a2,y1,y2,cF1,cF2)
-  return(x)
-}
+
 
 # Stuff from the surbar package
 
@@ -417,27 +392,61 @@ rvk2flr <- function(rbx, sName="nn", sDesc="none",pf=0,pm=0,cF1=5,cF2=10) {
 #' 
 #' @export
 #' @param filename The name of the file to read in
+#' @param val.name XXX
 #' @param Format The format of the output, available is "List","Wide","Long"
-read.lowestoft <- function(filename, Format="List")
+read_lowestoft <- function(filename, val.name, Format="List")
 {
   y <- scan(filename, skip = 2, nlines = 1, quiet = TRUE)
   a <- scan(filename, skip = 3, nlines = 1, quiet = TRUE)
-  tab <- read.delim(filename, header = FALSE, sep = "", skip = 5)
+  tab <- read.delim(filename, header = FALSE, sep = "", skip = 5)[1:(y[2] - y[1] + 1),]
   names(tab) <- c(a[1]:a[2])
   rownames(tab) <- c(y[1]:y[2])
   if(Format == "List") return(list(y = y, a = a, tab = tab))
   if(Format == "Wide") return(tab)
-  tab$year <- rownames(tab)
-  tab <- melt(tab,id.vars="year")
+  tab$year <- as.integer(rownames(tab))
+  tab <- melt(tab,id.vars="year",factorsAsStrings = FALSE)
+  names(tab) <- c("year","age",val.name)
+  tab$age <- as.integer(as.character(tab$age))
+  tab <- tab[!is.na(tab$age),]
+  tab[,3] <- as.numeric(tab[,3])
   return(tab)
 }
+
+#' @title read_ibya_lowestoft
+#' 
+#' @description XXX
+#' 
+#' @export
+#' 
+#' @param path XXX
+#' @param Scale XXX
+read_ibya_lowestoft <- function(path,Scale=1) {
+  oc <-  read_lowestoft(paste(path,"cn.dat",sep="/"),val.name="oC",Format = "Long")
+  oc$oC <- oc$oC/Scale
+  cw <-  read_lowestoft(paste(path,"cw.dat",sep="/"),val.name="cW",Format = "Long")
+  sw <-  read_lowestoft(paste(path,"sw.dat",sep="/"),val.name="sW",Format = "Long")
+  mat <- read_lowestoft(paste(path,"mo.dat",sep="/"),val.name="mat",Format = "Long")
+  nat <- read_lowestoft(paste(path,"nm.dat",sep="/"),val.name="m",Format = "Long")
+  pf <-  read_lowestoft(paste(path,"pf.dat",sep="/"),val.name="pf",Format = "Long")
+  pm <-  read_lowestoft(paste(path,"pm.dat",sep="/"),val.name="pm",Format = "Long")
+  
+  res <- join(oc,sw,by=c("year","age"))
+  res <- join(res,cw,by=c("year","age"))
+  res <- join(res,mat,by=c("year","age"))
+  res <- join(res,nat,by=c("year","age"))
+  res <- join(res,pf,by=c("year","age"))
+  res <- join(res,pm,by=c("year","age"))
+  return(res)
+}
+
+
 
 
 #' @title Read in Lowestoft-format survey data
 #' 
 #' @export
 #' @param filename The name of the file to read in
-read.lowestoft.survey <- function(filename)
+read_lowestoft_survey <- function(filename)
 {
   n <- scan(filename, skip = 1, nlines = 1, quiet = TRUE) - 100
   idx <- vector("list", length = n)
@@ -497,7 +506,7 @@ replace.text <- function (txt, char = "_", replchar = ".")
 
 #' Reads prelude-files
 #' 
-#' \code{read.prelude} reads prelude files. Originally located on package geo, there called s2pre.
+#' \code{read_prelude} reads prelude files. Originally located on package geo, there called s2pre.
 #' 
 #' @export
 #' @param skr is the name of the file
@@ -505,7 +514,7 @@ replace.text <- function (txt, char = "_", replchar = ".")
 #' @param dots.in.text, default is TRUE
 #' @author Hoski, documented by Einar
 #' 
-read.prelude <- function (skr, rownames = F, dots.in.text = T) 
+read_prelude <- function (skr, rownames = F, dots.in.text = T) 
 {
   fields <- count.fields(skr, sep = "\t")
   nrec <- length(fields)
@@ -535,8 +544,8 @@ read.prelude <- function (skr, rownames = F, dots.in.text = T)
 #' @param na.replace A character to replace NA with in the output file ("" by default)
 #' @return A prelude-file reprsentation of the data object is written to a file
 #' @note If file exist it is simply overwritten without any warning
-#' @seealso \code{\link{read.prelude}} for reading prelude files
-write.prelude <- function (data, file = "R.pre", na.replace = "")
+#' @seealso \code{\link{read_prelude}} for reading prelude files
+write_prelude <- function (data, file = "R.pre", na.replace = "")
 {
   if (is.data.frame(data)) 
     data <- as.matrix.data.frame(data)
@@ -577,8 +586,8 @@ write.prelude <- function (data, file = "R.pre", na.replace = "")
 #' @param assYear Assessment year
 #' @param retroY The retrospective year
 #' @return A list with \code{data.frame} rby, rbya and rba 
-#' @seealso \code{\link{read.separ}} for reading separate model output and \code{\link{read.adapt}} for reading adapt model output
-read.adcam <- function (path,run,rName=NA,mName=NA,calcSurBio=T,ggFactor=T,Scale=1e3,assYear=NA,retroY=NA) {
+#' @seealso \code{\link{read_separ}} for reading separate model output and \code{\link{read_adapt}} for reading adapt model output
+read_adcam <- function (path,run,rName=NA,mName=NA,calcSurBio=T,ggFactor=T,Scale=1e3,assYear=NA,retroY=NA) {
   cnRby <- c("year","r","n3","n6","bioF","bio","bio1","ssb","ssb2","f","hr",
              "oY","pY","oU1","pU1","oU2","pU2","run","model")
   cnRbya <- c("year","age","oC","cW","sW","ssbW","mat","n","z","f","m",
@@ -678,8 +687,8 @@ read.adcam <- function (path,run,rName=NA,mName=NA,calcSurBio=T,ggFactor=T,Scale
 #' @param assYear Assessment year
 #' @param retroY The retrospective year
 #' @return A list with \code{data.frame} rby, rbya and rba 
-#' @seealso \code{\link{read.separ}} for reading separate model output and \code{\link{read.adcam}} for reading adcam model output
-read.adapt <- function (path,run,rName=NA,mName=NA,calcSurBio=F,ggFactor=T,Scale=1e3,assYear=NA,retroY=NA) {
+#' @seealso \code{\link{read_separ}} for reading separate model output and \code{\link{read_adcam}} for reading adcam model output
+read_adapt <- function (path,run,rName=NA,mName=NA,calcSurBio=F,ggFactor=T,Scale=1e3,assYear=NA,retroY=NA) {
   cnRby <- c("year","r","n3","n6","bioF","bio","bio1","ssb","ssb2","f","hr",
              "oY","pY","oU1","pU1","oU2","pU2","run","model") 
   cnRbya <- c("year","age","oC","cW","sW","ssbW","mat","n","z","f","m",
@@ -789,5 +798,40 @@ read.adapt <- function (path,run,rName=NA,mName=NA,calcSurBio=F,ggFactor=T,Scale
 #' @param retroY The retrospective year
 #' @return A list with \code{data.frame} rby, rbya and rba 
 #' @note If file exist it is simply overwritten without any warning
-#' @seealso \code{\link{read.adcam}} for reading adcam model output and \code{\link{read.adapt}} for reading adapt model output
-read.separ <- read.adapt  # just to avoid confusion
+#' @seealso \code{\link{read_adcam}} for reading adcam model output and \code{\link{read_adapt}} for reading adapt model output
+read_separ <- read_adapt  # just to avoid confusion
+
+
+################################################################################
+# TASAC stuff - at least works for her-noss
+
+#' @title read_rbya_tasac
+#' 
+#' @description XXX
+#' 
+#' @export
+#' 
+#' @param file Name of the summary.txt file
+read_rbya_tasac <- function(file) {
+  x <- readLines(file)
+  i1 <- grep("N in model:",x)
+  i2 <- grep("F in model:",x)
+  n <- x[c((i1+1):(i2-2))]
+  n[1] <- paste("age",n[1])
+  writeLines(n,"tmp.txt")
+  rbya <- read.table("tmp.txt",header=T)
+  names(rbya) <- str_replace_all(names(rbya),"X","")
+  rbya <- melt(rbya,"age",variable.name="year",value.name = "n")
+  rbya$year <- as.integer(as.character(rbya$year))
+  i1 <- i2
+  i2 <- grep("M in model:",x)
+  n <- x[c((i1+1):(i2-2))]
+  n[1] <- paste("age",n[1])
+  writeLines(n,"tmp.txt")
+  y <- read.table("tmp.txt",header=T)
+  names(y) <- str_replace_all(names(y),"X","")
+  y <- melt(y,"age",variable.name="year",value.name = "f")
+  y$year <- as.integer(as.character(y$year))
+  rbya <- join(rbya,y)
+  return(rbya)
+  }
