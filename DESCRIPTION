@@ -10,8 +10,7 @@ Depends:
     stringr,
     lubridate,
     reshape2,
-    ggplot2,
-    fjolst
+    ggplot2
 Suggests:
     knitr,
     FLCore,
