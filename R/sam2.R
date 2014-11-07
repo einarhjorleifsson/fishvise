@@ -37,13 +37,13 @@ get_sam <- function(assessment="wbcod_2014",user="user3") {
   pf <-  read_lowestoft(get_file(paste(URL,"data",sep="/"),"pf.dat"),val.name="pF",Format = "Long")
   pm <-  read_lowestoft(get_file(paste(URL,"data",sep="/"),"pm.dat"),val.name="pM",Format = "Long")
   
-  ibya <- join(oc,sw,by=c("year","age"))
-  ibya <- join(ibya,cw,by=c("year","age"))
-  ibya <- join(ibya,sw,by=c("year","age"))
-  ibya <- join(ibya,mat,by=c("year","age"))
-  ibya <- join(ibya,nat,by=c("year","age"))
-  ibya <- join(ibya,pf,by=c("year","age"))
-  ibya <- join(ibya,pm,by=c("year","age"))
+  ibya <- plyr::join(oc,sw,by=c("year","age"))
+  ibya <- plyr::join(ibya,cw,by=c("year","age"))
+  ibya <- plyr::join(ibya,sw,by=c("year","age"))
+  ibya <- plyr::join(ibya,mat,by=c("year","age"))
+  ibya <- plyr::join(ibya,nat,by=c("year","age"))
+  ibya <- plyr::join(ibya,pf,by=c("year","age"))
+  ibya <- plyr::join(ibya,pm,by=c("year","age"))
   
   # Get the results  
   fit <- list()
@@ -121,7 +121,7 @@ get_sam <- function(assessment="wbcod_2014",user="user3") {
   N <- exp(fit$stateEst[,1:noN]) #/Scale
   colnames(N) <- c(minAge:maxAge)
   rownames(N) <- fit$years
-  N <- melt(N,factorsAsStrings = FALSE)
+  N <- reshape2::melt(N,factorsAsStrings = FALSE)
   names(N) <- c("year","age","n")
   
   mort <- exp(fit$stateEst[,-c(1:noN)])[,fit$keys$keyLogFsta[1,]]
@@ -129,11 +129,11 @@ get_sam <- function(assessment="wbcod_2014",user="user3") {
   #mort <- mort[-nrow(mort),]
   colnames(mort) <- sort(unique(ibya$age[ibya$oC > 0]))
   
-  mort <- melt(mort,factorsAsStrings = FALSE)
+  mort <- reshape2::melt(mort,factorsAsStrings = FALSE)
   names(mort) <- c("year","age","f")
   
-  rbya <- join(N,mort,by=c("year","age"))
-  rbya <- join(rbya,ibya,by=c("year","age"))
+  rbya <- plyr::join(N,mort,by=c("year","age"))
+  rbya <- plyr::join(rbya,ibya,by=c("year","age"))
   
   return(list(rbya=rbya,fit=fit))
 }
@@ -153,7 +153,7 @@ process_error_sam <- function(rbya) {
   x$age <- x$age - 1
   names(x)[3] <- "n_plus1"
   
-  dat <- join(rbya[,c("year","age","n","f","m")],x,by=c("year","age"))
+  dat <- plyr::join(rbya[,c("year","age","n","f","m")],x,by=c("year","age"))
   dat$z_n <- log(dat$n/dat$n_plus1)
   dat$z_f <- dat$f + dat$m
   dat$dm <- dat$z_n - dat$z_f

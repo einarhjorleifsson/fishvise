@@ -6,14 +6,17 @@ Date: 2013-11-03
 Description: More about what it does (maybe more than one line)
 VignetteBuilder: knitr
 Depends:
-    plyr,
-    stringr,
-    lubridate,
-    reshape2,
     ggplot2
+Imports:
+    lubridate,
+    plyr,
+    reshape2,
+    rgeos,
+    sp,
+    stringr
 Suggests:
-    knitr,
     FLCore,
+    knitr,
     RSQLite
 LazyData: yes
 Author: Einar Hjorleifsson <einar.hjorleifsson@gmail.com>

@@ -305,10 +305,10 @@ read_sen <- function(file,pM,pF) {
   nLines <- length(tmpfile)
   
   # 1. header
-  header <- str_trim(readLines(file,1))
-  header <- str_replace_all(header,"\"","")
+  header <- stringr::str_trim(readLines(file,1))
+  header <- stringr::str_replace_all(header,"\"","")
   header <- str_trim_tab(header)
-  header <- str_replace(header,"Stock summary, ","")
+  header <- stringr::str_replace(header,"Stock summary, ","")
   y$name_stock <- header
   
   # 2. Mortality specifiations
@@ -351,7 +351,7 @@ read_sen <- function(file,pM,pF) {
   nRows <- nages + nFleets * nages * 2 + 3*nages + 8
   x <- read.table(file,skip=3,nrows=nRows,sep=',',stringsAsFactors=FALSE)
   names(x) <- c('variable','value','cv')
-  d <- join(d,x,by='variable')
+  d <- plyr::join(d,x,by='variable')
   
   d$value[is.na(d$value)] <- 0
   d$cv[is.na(d$cv)] <- 0
@@ -371,7 +371,7 @@ read_sen <- function(file,pM,pF) {
   y$time[1] <- x[1]
   y$time[2] <- x[2]
   
-  d <- join(d,cn_keys$abd)
+  d <- plyr::join(d,cn_keys$abd)
   d <- d[,c("id","age","value","cv")]
   
   y$creator= "created from function fishvise::read_sen"
@@ -404,7 +404,7 @@ read_lowestoft <- function(filename, val.name, Format="List")
   if(Format == "List") return(list(y = y, a = a, tab = tab))
   if(Format == "Wide") return(tab)
   tab$year <- as.integer(rownames(tab))
-  tab <- melt(tab,id.vars="year",factorsAsStrings = FALSE)
+  tab <- reshape2::melt(tab,id.vars="year",factorsAsStrings = FALSE)
   names(tab) <- c("year","age",val.name)
   tab$age <- as.integer(as.character(tab$age))
   tab <- tab[!is.na(tab$age),]
@@ -430,12 +430,12 @@ read_ibya_lowestoft <- function(path,Scale=1) {
   pf <-  read_lowestoft(paste(path,"pf.dat",sep="/"),val.name="pf",Format = "Long")
   pm <-  read_lowestoft(paste(path,"pm.dat",sep="/"),val.name="pm",Format = "Long")
   
-  res <- join(oc,sw,by=c("year","age"))
-  res <- join(res,cw,by=c("year","age"))
-  res <- join(res,mat,by=c("year","age"))
-  res <- join(res,nat,by=c("year","age"))
-  res <- join(res,pf,by=c("year","age"))
-  res <- join(res,pm,by=c("year","age"))
+  res <- plyr::join(oc,sw,by=c("year","age"))
+  res <- plyr::join(res,cw,by=c("year","age"))
+  res <- plyr::join(res,mat,by=c("year","age"))
+  res <- plyr::join(res,nat,by=c("year","age"))
+  res <- plyr::join(res,pf,by=c("year","age"))
+  res <- plyr::join(res,pm,by=c("year","age"))
   return(res)
 }
 
@@ -820,8 +820,8 @@ read_rbya_tasac <- function(file) {
   n[1] <- paste("age",n[1])
   writeLines(n,"tmp.txt")
   rbya <- read.table("tmp.txt",header=T)
-  names(rbya) <- str_replace_all(names(rbya),"X","")
-  rbya <- melt(rbya,"age",variable.name="year",value.name = "n")
+  names(rbya) <- stringr::str_replace_all(names(rbya),"X","")
+  rbya <- reshape2::melt(rbya,"age",variable.name="year",value.name = "n")
   rbya$year <- as.integer(as.character(rbya$year))
   i1 <- i2
   i2 <- grep("M in model:",x)
@@ -829,9 +829,9 @@ read_rbya_tasac <- function(file) {
   n[1] <- paste("age",n[1])
   writeLines(n,"tmp.txt")
   y <- read.table("tmp.txt",header=T)
-  names(y) <- str_replace_all(names(y),"X","")
-  y <- melt(y,"age",variable.name="year",value.name = "f")
+  names(y) <- stringr::str_replace_all(names(y),"X","")
+  y <- reshape2::melt(y,"age",variable.name="year",value.name = "f")
   y$year <- as.integer(as.character(y$year))
-  rbya <- join(rbya,y)
+  rbya <- plyr::join(rbya,y)
   return(rbya)
   }

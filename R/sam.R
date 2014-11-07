@@ -130,12 +130,12 @@ read_rbya_sam <- function(x,Scale=1) {
   N <- exp(x$stateEst[,1:noN])/Scale
   colnames(N) <- c(minAge:maxAge)
   rownames(N) <- x$years
-  N <- melt(N,factorsAsStrings = FALSE)
+  N <- reshape2::melt(N,factorsAsStrings = FALSE)
   
   mort <- exp(x$stateEst[,-c(1:noN)])[,x$keys$keyLogFsta[1,]]
   colnames(mort) <- c(minAge:maxAge)
   rownames(mort) <- x$years
-  mort <- melt(mort,factorsAsStrings = FALSE)
+  mort <- reshape2::melt(mort,factorsAsStrings = FALSE)
   
   res <- cbind(N,mort[,3])
   names(res) <- c("year","age","n","f")
@@ -144,6 +144,45 @@ read_rbya_sam <- function(x,Scale=1) {
   # And join that with the results.
   return(res)
 }
+
+#' @title read_rby_sam
+#' 
+#' @description Reads the stock summary numbers by year from \code{sam}.
+#' 
+#' @export 
+#' 
+#' @param x Object from function \code{read.fit}.
+#' @param range Boolean Not used
+#' @param Scale A value
+#' @param format Character string. If "wide" (default) returns a wide table.
+#' If "long", returns a data.frame containing year, variable and est, hig and low
+#' for each
+read_rby_sam <- function(x,range=FALSE,Scale=1,format="wide") {  
+  rby <- cbind(x$fbar[,c(1,3,4)],
+               x$ssb[,c(1,3,4)],
+               x$tsb[,c(1,3,4)],
+               x$R[,c(1,3,4)],
+               rbind(exp(x$logCatch[,c(1,3,4)]),c(NA,NA,NA)))
+  colnames(rby)[10:12] <- c("est","low","hig")
+  rby[,4:15] <- rby[,4:15]/Scale
+  colnames(rby) <- paste(c(rep("f",3),rep("ssb",3),rep("tsb",3),rep("rec",3),rep("yield",3)),
+                         colnames(rby),sep="")
+  rby <- data.frame(rby)
+  rby$year <- x$years
+  rownames(rby) <- NULL
+  
+  if(format=="long") {
+    rby <- reshape2::melt(rby,c("year"))
+    rby$variable <- as.character(rby$variable)
+    rby$what <- substr(rby$variable,nchar(rby$variable)-2,nchar(rby$variable))
+    rby$variable <- substr(rby$variable,1,nchar(rby$variable)-3)
+    rby <- reshape2::dcast(rby,year + variable ~ what,value.var = "value")
+  }
+  
+  return(rby)
+}
+
+
 
 #' @title read_conf_sam
 #' 

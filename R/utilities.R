@@ -7,12 +7,12 @@
 #' @export 
 
 str_trim_tab <- function(string,side='both') {
-  string <- stringr:::check_string(string)
+  string <- stringr::check_string(string)
   stopifnot(length(side) == 1)
   side <- match.arg(side, c("left", "right", "both"))
   pattern <- switch(side, left = "^\\t+", right = "\\t+$", 
                     both = "^\\t+|\\t+$")
-  str_replace_all(string, pattern, "")
+  stringr::str_replace_all(string, pattern, "")
 }
 
 #' @title Trim 'commas' from start and end of string
@@ -24,12 +24,12 @@ str_trim_tab <- function(string,side='both') {
 #' @export
 
 str_trim_commas <- function(string,side='both') {
-  string <- stringr:::check_string(string)
+  string <- stringr::check_string(string)
   stopifnot(length(side) == 1)
   side <- match.arg(side, c("left", "right", "both"))
   pattern <- switch(side, left = "^,+", right = ",+$", 
                     both = "^,+|,t+$")
-  str_replace_all(string, pattern, "")
+  stringr::str_replace_all(string, pattern, "")
 }
 
 #' apply.shrink
@@ -192,8 +192,9 @@ align_ssb_r <- function(data,col.names=c("year","r","ssb"),aR) {
 #' @export
 
 calc.quantiles <- function(d, d.det, variable="variable") {
+  
   q05 <- q10 <- q16 <- q50 <- q84 <- q90 <- q95 <- value <- NULL
-  x <- ddply(d,c("variable"),summarise,q05=quantile(value,0.05),q10=quantile(value,0.10),q16=quantile(value,0.16),q50=quantile(value,0.50),q84=quantile(value,0.84),q90=quantile(value,0.90),q95=quantile(value,0.95))
+  x <- plyr::ddply(d,c("variable"),summarise,q05=quantile(value,0.05),q10=quantile(value,0.10),q16=quantile(value,0.16),q50=quantile(value,0.50),q84=quantile(value,0.84),q90=quantile(value,0.90),q95=quantile(value,0.95))
   if(!missing(d.det)) x$mean <- d.det$value
   
   return(x)
@@ -274,9 +275,9 @@ iconvDF <- function(data,from="ISO8859-1",to="UTF-8", ...) {
 
 date_2_qyear <- function(x) 
 {
-  res <- ifelse(month(x) < 9,
-                res <- paste(year(x)-1,substr(year(x),3,4),sep="/"),
-                res <- paste(year(x),substr(year(x)+1,3,4),sep="/"))
+  res <- ifelse(lubridate::month(x) < 9,
+                res <- paste(lubridate::year(x)-1,substr(lubridate::year(x),3,4),sep="/"),
+                res <- paste(lubridate::year(x),substr(lubridate::year(x)+1,3,4),sep="/"))
   i <- res == "1990/91"
   res[i] <- "1991/91"
   return(res)
@@ -293,14 +294,14 @@ date_2_qyear <- function(x)
 
 date_2_qyear_start <- function(x) 
 {
-  i <- month(x) < 9
-  year(x[i]) <- year(x[i]) - years(1)
-  day(x) <- 1
-  month(x) <- 9
+  i <- lubridate::month(x) < 9
+  lubridate::year(x[i]) <- lubridate::year(x[i]) - lubridate::years(1)
+  lubridate::day(x) <- 1
+  lubridate::month(x) <- 9
   
   # fix the first qyear
-  i <- year(x) == 1991
-    month(x[i]) <- 1
+  i <- lubridate::year(x) == 1991
+  lubridate::month(x[i]) <- 1
   
   return(x)
 }
