@@ -670,7 +670,7 @@ hcr_summarise_data <- function(X, ctr) {
                   r=R$value,
                   bio=sB$value,
                   ssb=sS$value,
-                  tF=Fbar$value,
+                  f=Fbar$value,
                   hr=sY$value/sB$value,
                   yield=sY$value)
   return(d)

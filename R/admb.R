@@ -21,7 +21,7 @@ compile_admb2 <- function(tpl_name="srest.tpl",windose=FALSE,compile=TRUE) {
   #if(!(compile | windose)) stop("Must compile in non-Windows operating systems")
   #if(compile)
   #{
-  file.copy(paste(path.package("mac"),"/extdata/",tpl_name,sep=''),tpl_name)
+  file.copy(paste(path.package("fishvise"),"/extdata/",tpl_name,sep=''),tpl_name)
   tpl <- stringr::str_replace(tpl_name,".tpl","")
   R2admb::compile_admb(tpl)
   R2admb::clean_admb(tpl)

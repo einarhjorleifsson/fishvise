@@ -10,6 +10,7 @@ Depends:
 Imports:
     lubridate,
     plyr,
+    R2admb,
     reshape2,
     rgeos,
     sp,
