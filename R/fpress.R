@@ -675,3 +675,62 @@ hcr_summarise_data <- function(X, ctr) {
                   yield=sY$value)
   return(d)
 }
+
+
+#' @title XXX
+#' 
+#' @description XXX
+#' 
+#' @export
+#' 
+#' @param df data.frame, normally generated via function hcr_summarise_data
+hcr_dynamic_plot <- function(df) {
+  dyn <- melt(df,id.vars = c("year"))
+  dyn <- plyr::ddply(dyn,c("year","variable"),summarise,
+               q05=quantile(value,0.05),
+               q10=quantile(value,0.10),
+               q25=quantile(value,0.25),
+               q50=quantile(value,0.50),
+               q75=quantile(value,0.75),
+               q90=quantile(value,0.90),
+               q95=quantile(value,0.95),
+               m=mean(value))
+  dyn_plot <- ggplot(dyn,aes(year)) + 
+    geom_ribbon(aes(ymin=q05,ymax=q95),fill="red",alpha=0.2) +
+    geom_ribbon(aes(ymin=q10,ymax=q90),fill="red",alpha=0.2) +
+    geom_ribbon(aes(ymin=q25,ymax=q75),fill="red",alpha=0.2) +
+    geom_line(aes(y=q50),col="red") +
+    geom_line(aes(y=m),col="blue") +
+    facet_wrap(~ variable,scales="free_y") +
+    labs(x="",y="")
+  return(list(data=dyn,ggplot=dyn_plot))
+}
+
+#' @title XXX
+#' 
+#' @description XXX
+#' 
+#' @export
+#' 
+#' @param df data.frame, normally generated via function hcr_summarise_data
+hcr_equilibrium_plot <- function(df) {
+  eq <- melt(df,id.vars = c("year","target"))
+  eq <- ddply(eq,c("target","variable"),summarise,
+              q05=quantile(value,0.05),
+              q10=quantile(value,0.10),
+              q25=quantile(value,0.25),
+              q50=quantile(value,0.50),
+              q75=quantile(value,0.75),
+              q90=quantile(value,0.90),
+              q95=quantile(value,0.95),
+              m=mean(value))
+  eq_plot <- ggplot(eq,aes(target)) + 
+    geom_ribbon(aes(ymin=q05,ymax=q95),fill="red",alpha=0.2) +
+    geom_ribbon(aes(ymin=q10,ymax=q90),fill="red",alpha=0.2) +
+    geom_ribbon(aes(ymin=q25,ymax=q75),fill="red",alpha=0.2) +
+    geom_line(aes(y=q50),col="red") +
+    geom_line(aes(y=m),col="blue") +
+    facet_wrap(~ variable,scales="free_y") +
+    labs(x="",y="")
+  return(list(data=eq,ggplot=eq_plot))
+}
