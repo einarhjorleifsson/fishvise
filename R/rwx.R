@@ -588,7 +588,7 @@ write_prelude <- function (data, file = "R.pre", na.replace = "")
 #' @return A list with \code{data.frame} rby, rbya and rba 
 #' @seealso \code{\link{read_separ}} for reading separate model output and \code{\link{read_adapt}} for reading adapt model output
 read_adcam <- function (path,run,rName=NA,mName=NA,calcSurBio=T,ggFactor=T,Scale=1e3,assYear=NA,retroY=NA) {
-  cnRby <- c("year","r","n3","n6","bioF","bio","bio1","ssb","ssb2","f","hr",
+  cnRby <- c("year","r","n3","n6","bioF","bio","bio1","ssb","ssb2","fbar","hr",
              "oY","pY","oU1","pU1","oU2","pU2","run","model")
   cnRbya <- c("year","age","oC","cW","sW","ssbW","mat","n","z","f","m",
               "pC","rC","oU1","pU1","rU1","oU2","pU2","rU2")
@@ -604,7 +604,7 @@ read_adcam <- function (path,run,rName=NA,mName=NA,calcSurBio=T,ggFactor=T,Scale
     rby$oU2 <- NA
     rby <- rby[,c(1:17,20:21,18:19)]
   }
-  names(rby) <- c("year","F2","f","pY","ssb","ssb2","bioF","bio",
+  names(rby) <- c("year","F2","fbar","pY","ssb","ssb2","bioF","bio",
                   "bio1","r","n3","n6","hr","oY","a50","pU1","oU1",
                   "pU2","oU2","n","qF")
   
@@ -689,7 +689,7 @@ read_adcam <- function (path,run,rName=NA,mName=NA,calcSurBio=T,ggFactor=T,Scale
 #' @return A list with \code{data.frame} rby, rbya and rba 
 #' @seealso \code{\link{read_separ}} for reading separate model output and \code{\link{read_adcam}} for reading adcam model output
 read_adapt <- function (path,run,rName=NA,mName=NA,calcSurBio=F,ggFactor=T,Scale=1e3,assYear=NA,retroY=NA) {
-  cnRby <- c("year","r","n3","n6","bioF","bio","bio1","ssb","ssb2","f","hr",
+  cnRby <- c("year","r","n3","n6","bioF","bio","bio1","ssb","ssb2","fbar","hr",
              "oY","pY","oU1","pU1","oU2","pU2","run","model") 
   cnRbya <- c("year","age","oC","cW","sW","ssbW","mat","n","z","f","m",
               "pC","rC","oU1","pU1","rU1","oU2","pU2","rU2")
@@ -714,7 +714,7 @@ read_adapt <- function (path,run,rName=NA,mName=NA,calcSurBio=F,ggFactor=T,Scale
     rby$pU2 <- rep(NA,n)
     rby$oU2 <- rep(NA,n)
   }
-  names(rby) <- c("year","f","pY","oY","ssb","ssb2","bioF","bio1",
+  names(rby) <- c("year","fbar","pY","oY","ssb","ssb2","bioF","bio1",
                   "bio","preR","r","n1","n3","n6","pU1","oU1",
                   "pU2","oU2")
   if(ggFactor) rby$r <- rby$r*exp(-0.4)
