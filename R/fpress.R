@@ -287,13 +287,13 @@ hcr_set_starting_conditions <- function(dat_y1, d, ctr)
   
   n_years <- dim(d$cW)[2]
   if(ctr$w_error == 1) {
-    d$cW[,2:n_years,,] <- d$cW[,2:n_years,,] * exp(d$cvcW[,2:n_years,,])
-    d$sW[,2:n_years,,] <- d$sW[,2:n_years,,] * exp(d$cvsW[,2:n_years,,])
+    d$cW[,1:n_years,,] <- d$cW[,1:n_years,,] * exp(d$cvcW[,1:n_years,,])
+    d$sW[,1:n_years,,] <- d$sW[,1:n_years,,] * exp(d$cvsW[,1:n_years,,])
   }
   
   if(ctr$w_error == 2) {
-    d$cW[,2:n_years,,] <- d$cW[,2:n_years,,] * (1 + d$cvcW[,2:n_years,,])
-    d$sW[,2:n_years,,] <- d$sW[,2:n_years,,] * (1 + d$cvsW[,2:n_years,,])
+    d$cW[,1:n_years,,] <- d$cW[,1:n_years,,] * (1 + d$cvcW[,1:n_years,,])
+    d$sW[,1:n_years,,] <- d$sW[,1:n_years,,] * (1 + d$cvsW[,1:n_years,,])
   }
   
   if(ctr$w_refB == 0) d$bW <- d$sW   # use stock weights to calculate ref bio
