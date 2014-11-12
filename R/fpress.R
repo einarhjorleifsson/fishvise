@@ -734,3 +734,104 @@ hcr_equilibrium_plot <- function(df) {
     labs(x="",y="")
   return(list(data=eq,ggplot=eq_plot))
 }
+
+################################################################################
+# THIS IS FOR MACKEREL
+
+
+#' @title hcr_recruitment_model2
+#' 
+#' @description Model to predict the recruitment. Here for mcmc frames
+#' 
+#' NOTE: Only ricker model and vs. one or the other of segreg or bevholt
+#' reccv
+#' @export
+#' 
+#' @param ssb The true spawning stock biomass
+#' @param reccv XXX
+#' @param ctr The control file, containing the parameters
+hcr_recruitment_model2 <- function(ssb,reccv,ctr) 
+{
+  #nsamp <- ctr$iter
+  #fit <- ctr$ssb_pars
+  #pR <- t(sapply(seq(nsamp), function(j) exp(match.fun(fit $ model[j]) (fit[j,], ssb)) ))
+  #return(pR)
+  #hcr_recruitment_model <- function(ssb,ctr) 
+  #{
+  
+  #fit <- ctr$ssb_pars
+  #rec <- ifelse(fit$model %in% "segreg",
+  #              exp(log(ifelse(ssb >= fit$b,fit$a*fit$b,fit$a*ssb))) * reccv,
+  #              exp(log(fit$a) + log(ssb) - fit$b * ssb) * reccv)
+  #return(rec)
+  ssb <- ssb * 1e6
+  rec <- rep(-1,length(ssb))
+  fit <- ctr$ssb_pars
+  
+  # NOTE: Could use the functions in fishvise
+  i <- fit$model == "segreg"
+  if(any(i)) rec[i] <- fit$a[i]*(ssb[i]+sqrt(fit$b[i]^2+0.001)-sqrt((ssb[i]-fit$b[i])^2+0.001)) * reccv[i]
+  
+  i <- fit$model == "ricker"
+  if(any(i)) rec[i] <- fit$a[i] * ssb[i] * exp(-fit$b[i] * ssb[i]) * reccv[i]
+  
+  i <- fit$model == "bevholt"
+  if(any(i)) rec[i] <- fit$a[i] * ssb[i] /(fit$b[i] + ssb[i]) * reccv[i]
+  
+  return(rec/1e6)
+  
+}
+
+#' @title Operating model2
+#' 
+#' @description This function is the same as hcr_operating_model except
+#' the recruitment model
+#' 
+#' @export
+#' 
+#' @param y XXX
+#' @param h XXX
+#' @param ctr ctr_rec
+#' @param Fmult XXX
+#' @param nR XXX
+
+hcr_operating_model2 <- function(y, h, ctr, Fmult, nR=1) {
+  
+  n_ages  <- dim(X$N)[1]
+  n_years <- dim(X$N)[2]
+  
+  N   <- X$N[,y ,h,]
+  cW  <- X$cW[,y,h,]
+  sW  <- X$sW[,y,h,]
+  xN <- X$mat[,y,h,]
+  M   <- X$M[,y,h,]
+  pF <- X$pF[,y,h,]
+  pM <- X$pM[,y,h,]
+  
+  tF <- t(Fmult*t(X$selF[,y,h,]))
+  dF <- t(Fmult*t(X$selD[,y,h,]))
+  X$tF[,y,h,] <<- tF
+  
+  # Conventional ssb
+  ssb <- colSums(N * exp( -(pM * M + pF * (tF + dF))) * xN * sW)
+  ## Mean age in the spawning stock
+  # mAge <- colSums((SSBay*c(1:n_ages)))/ssb 
+  ## Egg mass
+  # ssb <- colSums(Ny*exp(-(My*pMy+(Fy+Dy)*pFy))*maty*sWy * (0.005*sWy))
+  
+  X$N[1,y,h,] <<- hcr_recruitment_model2(ssb = ssb, reccv=X$cvR[y,h, ] ,ctr = ctr)
+  
+  N[1,] <- X$N[1,y,h,] # update the recruits in the current year
+  # TAKE THE CATCH
+  X$C[,y,h,] <<- N * tF/ (tF + dF + M + 0.00001)*(1-exp(- (tF + dF + M)))
+  # NEXT YEARS STOCK
+  
+  NyEnd <- N * exp( -( tF + dF + M))
+  if(y < n_years ) {
+    X$N[2:n_ages, y+1, h,] <<- NyEnd[1:(n_ages-1),]
+    # plus group calculation
+    X$N[n_ages,y+1,h,] <<- X$N[n_ages,y+1,h,] +
+      X$N[n_ages,y,h,] * exp(-X$tF[n_ages,y,h,] - X$M[n_ages,y,h,])
+  }
+  #return(d)
+}
