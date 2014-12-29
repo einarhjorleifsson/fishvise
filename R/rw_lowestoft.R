@@ -29,46 +29,51 @@ read_lowestoft_file <- function(file, sep = "", quiet = TRUE) {
   dfor <- info[4, 1]
   # Switch for file type (dfor; e.g. matrix, scalar, vector)
   switch(misc,
-         "1" = {range <- scan(file, skip = 2, nlines = 2, sep = sep, comment.char='#',
+         "1" = {range <- scan(file, 
+                              skip = 2, 
+                              nlines = 2, 
+                              sep = sep, 
+                              comment.char='#',
                               quiet=quiet)
                 ages <- range[3:4]
                 nages <- ages[2] - ages[1] + 1
                 yrs <- range[1:2]
                 nyrs <- yrs[2] - yrs[1] + 1
-                dms <- list(age=as.character(ages[1]:ages[2]),year=as.character(yrs[1]:yrs[2]))
+                dms <- list(year=as.character(yrs[1]:yrs[2]),age=as.character(ages[1]:ages[2]))
                 switch(dfor,
-                       "1" = a. <- matrix(t(read.table(file = file,
-                                                       skip = 5,
-                                                       nrows = nyrs,
-                                                       sep = sep,
-                                                       comment.char='#')[, 1:nages]),
-                                          nrow=nages,
-                                          ncol=nyrs,
-                                          dimnames= dms),
+                       "1" = a. <- matrix(scan(file,
+                                               skip=5,
+                                               comment.char="#",
+                                               quiet=quiet),
+                                          ncol=nages,
+                                          nrow=nyrs,
+                                          byrow=T,
+                                          dimnames= dms)[1:nyrs, 1:nages],
                        "2" = a. <- matrix(rep(scan(file,
                                                    skip = 5,
                                                    sep = sep,
                                                    comment.char='#',
                                                    quiet=quiet)[1:nages], nyrs), 
-                                          nrow = nages,
-                                          ncol = nyrs,
+                                          ncol = nages,
+                                          nrow = nyrs,
+                                          byrow=T,
                                           dimnames = dms),
                        "3" = a. <- matrix(rep(scan(file, 
                                                    skip = 5, 
                                                    sep = sep,
                                                    comment.char='#', 
                                                    quiet=quiet)[1], nyrs * nages),
-                                          nrow = nages,
-                                          ncol = nyrs,
+                                          ncol = nages,
+                                          nrow = nyrs,
                                           dimnames = dms),
                        "5" = {
-                         dms <- list(age="all",year=as.character(yrs[1]:yrs[2]))
+                         dms <- list(year=as.character(yrs[1]:yrs[2]))
                          a. <- matrix(t(read.table(file = file, 
                                                    skip = 5,
                                                    nrows = nyrs, 
                                                    sep = sep)[,1]), 
-                                      nrow = 1, 
-                                      ncol = nyrs,
+                                      ncol = 1, 
+                                      nrow = nyrs,
                                       dimnames = dms)
                        })
                 #needed to go from int to double
@@ -114,6 +119,7 @@ read_lowestoft2 <- function(file, sep = "", quiet=TRUE) {
   #FLStock. <- FLStock(catch.n=FLQuant(NA, dimnames = list(age = ages[1]:ages[2], year = yrs[1]:yrs[2], unit = "unique", season = "all", area = "unique")))
   FLStock. <- list()
   for (i in files.) {
+    print(i)
     if (!file.exists(i)){
       if(quiet != TRUE) cat("File ", i, "does not exist", "\n")
     }

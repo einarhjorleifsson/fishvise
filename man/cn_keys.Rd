@@ -5,12 +5,8 @@
 \title{XX}
 \description{
 A \emph{list} column matching keys
-
-A \emph{list} column matching keys
 }
 \author{
-Einar Hjorleifsson
-
 Einar Hjorleifsson
 }
 
