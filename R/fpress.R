@@ -685,7 +685,10 @@ hcr_summarise_data <- function(X, ctr) {
 #' 
 #' @param df data.frame, normally generated via function hcr_summarise_data
 hcr_dynamic_plot <- function(df) {
-  dyn <- melt(df,id.vars = c("year"))
+  
+  # dummy
+  summarise <- value <- year <- q05 <- q10 <- q25 <- q50 <- q75 <- q90 <- q95 <- NA 
+  dyn <- reshape2::melt(df,id.vars = c("year"))
   dyn <- plyr::ddply(dyn,c("year","variable"),summarise,
                q05=quantile(value,0.05),
                q10=quantile(value,0.10),
@@ -714,8 +717,12 @@ hcr_dynamic_plot <- function(df) {
 #' 
 #' @param df data.frame, normally generated via function hcr_summarise_data
 hcr_equilibrium_plot <- function(df) {
-  eq <- melt(df,id.vars = c("year","target"))
-  eq <- ddply(eq,c("target","variable"),summarise,
+  
+  # dummy
+  summarise <- value <- year <- q05 <- q10 <- q25 <- q50 <- q75 <- q90 <- q95 <- NA 
+  
+  eq <- reshape2::melt(df,id.vars = c("year","target"))
+  eq <- plyr::ddply(eq,c("target","variable"),summarise,
               q05=quantile(value,0.05),
               q10=quantile(value,0.10),
               q25=quantile(value,0.25),
@@ -732,7 +739,10 @@ hcr_equilibrium_plot <- function(df) {
     geom_line(aes(y=m),col="blue") +
     facet_wrap(~ variable,scales="free_y") +
     labs(x="",y="")
-  return(list(data=eq,ggplot=eq_plot))
+  x <- eq[eq$variable %in% "yield",]
+  refs <- data.frame(fmsy_mean = c(x$target[x$m==max(x$m)]),
+                     fmsy_med  = c(x$target[x$q50==max(x$q50)]))
+  return(list(data=eq,refs=refs,ggplot=eq_plot))
 }
 
 ################################################################################

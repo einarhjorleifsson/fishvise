@@ -3,10 +3,10 @@
 \alias{read_rbya_sam}
 \title{read_rbya_sam}
 \usage{
-read_rbya_sam(x, Scale = 1)
+read_rbya_sam(fit, Scale = 1)
 }
 \arguments{
-\item{x}{Object from read_fit_sam}
+\item{fit}{Object from read_fit_sam}
 
 \item{Scale}{A value}
 }

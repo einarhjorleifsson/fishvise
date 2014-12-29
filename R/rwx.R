@@ -441,6 +441,72 @@ read_ibya_lowestoft <- function(path,Scale=1) {
 
 
 
+#dir.data <- "~/ass/2015/01/BenchMark/ass/sam/data"
+#file <- file.path(dir.data, "index.txt")
+
+
+
+
+
+
+read_ibya_lowestoft2 <- function (file, sep = "", quiet = TRUE) 
+{
+  if (!file.exists(file)) {
+    if (quiet == TRUE) stop()
+    if (quiet != TRUE) stop(paste("VPA index file", file, "does not exist"))
+  }
+  dir <- dirname(file)
+  files. <- scan(file, what = "character", skip = 2, sep = sep, 
+                 quiet = quiet)
+  for (i in seq(length(files.))) {
+    if (!grepl(dir, files.[i])) {
+      files.[i] <- file.path(dir, files.[i], fsep = .Platform$file.sep)
+    }
+  }
+  
+  range1 <- scan(files.[1], skip = 2, nlines = 1, sep = sep, 
+                 quiet = quiet)
+  range2 <- scan(files.[1], skip = 3, nlines = 1, sep = sep, 
+                 quiet = quiet)
+  range <- c(range1[1:2], range2[1:2])
+  ages <- range[3:4]
+  yrs <- range[1:2]
+  
+  # should have dimention year age, not age year
+  a <- array(NA,
+             dim = c(length(ages[1]:ages[2]),
+                     length(yrs[1]:yrs[2])),
+             dimnames=list(age=ages[1]:ages[2],
+                           year=yrs[1]:yrs[2]))
+  
+  for (i in files.) {
+    if (!file.exists(i)) {
+      if (quiet != TRUE) 
+        cat("File ", i, "does not exist", "\n")
+    }
+    if (file.exists(i)) {
+      a. <- readVPAFile(i, sep = sep, quiet = quiet)
+      switch(as.character(scan(i, skip = 1, nlines = 1, 
+                               sep = sep, comment.char = "#", quiet = TRUE)[2]),
+             `1` = FLStock.@landings <- a., `2` = FLStock.@landings.n <- a., 
+             `3` = FLStock.@landings.wt <- a., `4` = FLStock.@stock.wt <- a., 
+             `5` = FLStock.@m <- a., `6` = FLStock.@mat <- a., 
+             `7` = FLStock.@harvest.spwn <- a., `8` = FLStock.@m.spwn <- a., 
+             `21` = FLStock.@discards <- a., `22` = FLStock.@discards.n <- a., 
+             `23` = FLStock.@discards.wt <- a., `24` = FLStock.@catch <- a., 
+             `25` = FLStock.@catch.n <- a., `26` = FLStock.@catch.wt <- a., 
+             `27` = FLStock.@harvest <- a., `28` = FLStock.@stock.n <- a.)
+    }
+  }
+  FLStock.@range <- c(min = ages[1], max = ages[2], plusgroup = ages[2], 
+                      minyear = yrs[1], maxyear = yrs[2])
+  FLStock.@desc <- paste("Imported from a VPA file (", file, 
+                         "). ", date(), sep = "")
+  FLStock.@name <- scan(file, nlines = 1, what = character(0), 
+                        sep = "\n", quiet = TRUE)
+  return(FLStock.)
+}
+
 
 #' @title Read in Lowestoft-format survey data
 #' 

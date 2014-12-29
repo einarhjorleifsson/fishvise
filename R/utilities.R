@@ -1,3 +1,19 @@
+#' @title grep2
+#' 
+#' @description List files that contain a particular text string
+#' 
+#' @export
+#' 
+#' @param directory Name of the directory
+#' @param pattern The string to search for
+
+grep2 <- function(directory,pattern) {
+  cmd <- paste("grep -rnw",directory,"-e",pattern)
+  system(cmd)
+}
+
+
+
 #' @title Trim 'tabs' from start and end of string
 #' 
 #' @description Function is enspired by str_trim function in the stringr package. 
@@ -7,7 +23,7 @@
 #' @export 
 
 str_trim_tab <- function(string,side='both') {
-  string <- stringr::check_string(string)
+  string <- stringr:::check_string(string)
   stopifnot(length(side) == 1)
   side <- match.arg(side, c("left", "right", "both"))
   pattern <- switch(side, left = "^\\t+", right = "\\t+$", 
@@ -24,7 +40,7 @@ str_trim_tab <- function(string,side='both') {
 #' @export
 
 str_trim_commas <- function(string,side='both') {
-  string <- stringr::check_string(string)
+  string <- stringr:::check_string(string)
   stopifnot(length(side) == 1)
   side <- match.arg(side, c("left", "right", "both"))
   pattern <- switch(side, left = "^,+", right = ",+$", 
@@ -193,7 +209,7 @@ align_ssb_r <- function(data,col.names=c("year","r","ssb"),aR) {
 
 calc.quantiles <- function(d, d.det, variable="variable") {
   
-  q05 <- q10 <- q16 <- q50 <- q84 <- q90 <- q95 <- value <- NULL
+  q05 <- q10 <- q16 <- q50 <- q84 <- q90 <- q95 <- summarise <- value <- NULL
   x <- plyr::ddply(d,c("variable"),summarise,q05=quantile(value,0.05),q10=quantile(value,0.10),q16=quantile(value,0.16),q50=quantile(value,0.50),q84=quantile(value,0.84),q90=quantile(value,0.90),q95=quantile(value,0.95))
   if(!missing(d.det)) x$mean <- d.det$value
   

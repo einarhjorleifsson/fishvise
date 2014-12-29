@@ -3,7 +3,8 @@
 \alias{read_rby_sam}
 \title{read_rby_sam}
 \usage{
-read_rby_sam(x, range = FALSE, Scale = 1, format = "wide")
+read_rby_sam(x, range = FALSE, Scale = 1, format = "wide",
+  stdev = FALSE)
 }
 \arguments{
 \item{x}{Object from function \code{read.fit}.}
@@ -15,6 +16,8 @@ read_rby_sam(x, range = FALSE, Scale = 1, format = "wide")
 \item{format}{Character string. If "wide" (default) returns a wide table.
 If "long", returns a data.frame containing year, variable and est, hig and low
 for each}
+
+\item{stdev}{Boolean, if FALSE (default) not included in the output}
 }
 \description{
 Reads the stock summary numbers by year from \code{sam}.
