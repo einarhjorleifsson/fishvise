@@ -1,8 +1,8 @@
 #' @title read_lowestoft_file
 #' 
-#' @description bla, bla, ... Modified 
-#' \href{https://github.com/flr/FLCore/blob/master/R/io.VPAsuite.R}{FLCore::readVPAFile} function,
-#' here it only returns an matrix rather than a FLQuant-object
+#' @description The code is inpired by the
+#' \href{https://github.com/flr/FLCore/blob/master/R/io.VPAsuite.R}{FLCore::readVPAFile} function.
+#' The difference is that it is not dependent on the FLCore, including the S4-methods.
 #' 
 #' @export
 #' 
@@ -117,38 +117,124 @@ read_lowestoft2 <- function(file, sep = "", quiet=TRUE) {
   ages <- range[3:4]
   yrs <- range[1:2]
   #FLStock. <- FLStock(catch.n=FLQuant(NA, dimnames = list(age = ages[1]:ages[2], year = yrs[1]:yrs[2], unit = "unique", season = "all", area = "unique")))
-  FLStock. <- list()
+  res <- list()
   for (i in files.) {
-    print(i)
     if (!file.exists(i)){
       if(quiet != TRUE) cat("File ", i, "does not exist", "\n")
     }
     if (file.exists(i)) {
       a. <- read_lowestoft_file(i, sep=sep, quiet=quiet)
       switch(as.character(scan(i, skip = 1, nlines = 1, sep = sep, comment.char='#', quiet=TRUE)[2]),
-             "1" = FLStock.$landings <-a.,
-             "2" = FLStock.$landings.n <-a.,
-             "3" = FLStock.$landings.wt <-a.,
-             "4" = FLStock.$stock.wt <-a.,
-             "5" = FLStock.$m <-a.,
-             "6" = FLStock.$mat <-a.,
-             "7" = FLStock.$harvest.spwn<-a.,
-             "8" = FLStock.$m.spwn <-a.,
-             "21"= FLStock.$discards <-a.,
-             "22"= FLStock.$discards.n <-a.,
-             "23"= FLStock.$discards.wt <-a.,
-             "24"= FLStock.$catch <-a.,
-             "25"= FLStock.$catch.n <-a.,
-             "26"= FLStock.$catch.wt <-a.,
-             "27"= FLStock.$harvest <-a.,
-             "28"= FLStock.$stock.n <-a. )
+             "1" = res$landings <-a.,
+             "2" = res$landings.n <-a.,
+             "3" = res$landings.wt <-a.,
+             "4" = res$stock.wt <-a.,
+             "5" = res$m <-a.,
+             "6" = res$mat <-a.,
+             "7" = res$harvest.spwn<-a.,
+             "8" = res$m.spwn <-a.,
+             "21"= res$discards <-a.,
+             "22"= res$discards.n <-a.,
+             "23"= res$discards.wt <-a.,
+             "24"= res$catch <-a.,
+             "25"= res$catch.n <-a.,
+             "26"= res$catch.wt <-a.,
+             "27"= res$harvest <-a.,
+             "28"= res$stock.n <-a. )
     }
   }
-  FLStock.$range <- c(min = ages[1], max = ages[2],
+  
+  # change names to rvk-standard
+  # pending
+  
+  res$range <- c(min = ages[1], max = ages[2],
                       plusgroup = ages[2], minyear = yrs[1], maxyear = yrs[2])
-  FLStock.$desc <- paste("Imported from a VPA file (",
+  res$desc <- paste("Imported from a VPA file (",
                          file, "). ", date(), sep="")
-  FLStock.$name <- scan(file, nlines = 1, what = character(0),
+  res$name <- scan(file, nlines = 1, what = character(0),
                         sep = "\n", quiet=TRUE)
-  return(FLStock.)
+  
+  
+  # Landings
+  ibya <- reshape2::melt(res$landings.n,value.name = "oL")
+  # Catch  
+  if(is.null(res$catch.n)) {
+    ibya$oC <- ibya$oL
+  } else {
+    x <- reshape2::melt(res$catch.n,value.name="oC")
+    ibya <- plyr::join(ibya,x,by=c("year","age"))
+  }
+  # Discards
+  if(is.null(res$discards.n)) {
+    ibya$oD <- 0
+  } else {
+    x <- reshape2::melt(res$discards.n,value.name="oD")
+    ibya <- plyr::join(ibya,x,by=c("year","age"))
+  }
+  # Landings weight
+  x <- reshape2::melt(res$landings.wt,value.name="lW")
+  ibya <- plyr::join(ibya,x,by=c("year","age"))
+  # Catch weigths  
+  if(is.null(res$catch.wt)) {
+    ibya$cW <- ibya$lW
+  } else {
+    x <- reshape2::melt(res$catch.wt,value.name="cW")
+    ibya <- plyr::join(ibya,x,by=c("year","age"))
+  }
+  # Discard weights
+  if(is.null(res$discards.wt)) {
+    ibya$dW <- 0
+  } else {
+    x <- reshape2::melt(res$discards.wt,value.name="dW")
+    ibya <- plyr::join(ibya,x,by=c("year","age"))
+  }
+  # SSB weights
+  if(is.null(res$stock.wt)) {
+    ibya$ssbW <- ibya$catch.wt
+  } else {
+    x <- reshape2::melt(res$stock.wt,value.name="ssbW")
+    ibya <- plyr::join(ibya,x,by=c("year","age"))
+  }
+  # Maturity
+  if(is.null(res$mat)) {
+    ibya$mat <- NA
+  } else {
+    x <- reshape2::melt(res$mat,value.name="mat")
+    ibya <- plyr::join(ibya,x,by=c("year","age"))
+  }
+  # M
+  if(is.null(res$m)) {
+    ibya$m <- NA
+  } else {
+    x <- reshape2::melt(res$m,value.name="m")
+    ibya <- plyr::join(ibya,x,by=c("year","age"))
+  }
+  # pF
+  if(is.null(res$harvest.spwn)) {
+    ibya$pF <- NA
+  } else {
+    x <- reshape2::melt(res$harvest.spwn,value.name="pF")
+    ibya <- plyr::join(ibya,x,by=c("year","age"))
+  }
+  # pM
+  if(is.null(res$m.spwn)) {
+    ibya$pM <- NA
+  } else {
+    x <- reshape2::melt(res$m.spwn,value.name="pM")
+    ibya <- plyr::join(ibya,x,by=c("year","age"))
+  }
+  # fishing mortality
+  # Problem here is that res$harvest.spwn gets tested
+  #if(!is.null(res$harvest)) {
+  #  x <- reshape2::melt(res$harvest,value.name="f")
+  #  ibya <- plyr::join(ibya,x,by=c("year","age"))
+  #}
+  # stock in numbers
+  if(!is.null(res$stock.n)) {
+    x <- reshape2::melt(res$stock.n,value.name="n")
+    ibya <- plyr::join(ibya,x,by=c("year","age"))
+  }
+  res$bya <- ibya
+  
+  return(res)
 }

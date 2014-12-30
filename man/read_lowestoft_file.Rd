@@ -13,8 +13,8 @@ read_lowestoft_file(file, sep = "", quiet = TRUE)
 \item{quiet}{boolean, default is TRUE}
 }
 \description{
-bla, bla, ... Modified
-\href{https://github.com/flr/FLCore/blob/master/R/io.VPAsuite.R}{FLCore::readVPAFile} function,
-here it only returns an matrix rather than a FLQuant-object
+The code is inpired by the
+\href{https://github.com/flr/FLCore/blob/master/R/io.VPAsuite.R}{FLCore::readVPAFile} function.
+The difference is that it is not dependent on the FLCore, including the S4-methods.
 }
 
