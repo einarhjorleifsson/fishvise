@@ -130,6 +130,7 @@ read_sam <- function (run.dir,ctrl, admb.stem = "sam",ibya)
   f.stateEst <- stateEst[-c(1:n.ages), , drop = FALSE]
   
   x <- res$states["catch",]
+  x <- x[!is.na(x)]
   x <- x[x != 0]
   for (a in names(x)) {
     res$harvest[a, ] <- exp(f.stateEst[x[a], ])

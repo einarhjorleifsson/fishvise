@@ -156,85 +156,87 @@ read_lowestoft2 <- function(file, sep = "", quiet=TRUE) {
   
   
   # Landings
-  ibya <- reshape2::melt(res$landings.n,value.name = "oL")
+  bya <- reshape2::melt(res$landings.n,value.name = "oL")
   # Catch  
   if(is.null(res$catch.n)) {
-    ibya$oC <- ibya$oL
+    bya$oC <- bya$oL
   } else {
     x <- reshape2::melt(res$catch.n,value.name="oC")
-    ibya <- plyr::join(ibya,x,by=c("year","age"))
+    bya <- plyr::join(bya,x,by=c("year","age"))
   }
   # Discards
   if(is.null(res$discards.n)) {
-    ibya$oD <- 0
+    bya$oD <- 0
   } else {
     x <- reshape2::melt(res$discards.n,value.name="oD")
-    ibya <- plyr::join(ibya,x,by=c("year","age"))
+    bya <- plyr::join(bya,x,by=c("year","age"))
   }
   # Landings weight
   x <- reshape2::melt(res$landings.wt,value.name="lW")
-  ibya <- plyr::join(ibya,x,by=c("year","age"))
+  bya <- plyr::join(bya,x,by=c("year","age"))
   # Catch weigths  
   if(is.null(res$catch.wt)) {
-    ibya$cW <- ibya$lW
+    bya$cW <- bya$lW
   } else {
     x <- reshape2::melt(res$catch.wt,value.name="cW")
-    ibya <- plyr::join(ibya,x,by=c("year","age"))
+    bya <- plyr::join(bya,x,by=c("year","age"))
   }
   # Discard weights
   if(is.null(res$discards.wt)) {
-    ibya$dW <- 0
+    bya$dW <- 0
   } else {
     x <- reshape2::melt(res$discards.wt,value.name="dW")
-    ibya <- plyr::join(ibya,x,by=c("year","age"))
+    bya <- plyr::join(bya,x,by=c("year","age"))
   }
   # SSB weights
   if(is.null(res$stock.wt)) {
-    ibya$ssbW <- ibya$catch.wt
+    bya$ssbW <- bya$catch.wt
   } else {
     x <- reshape2::melt(res$stock.wt,value.name="ssbW")
-    ibya <- plyr::join(ibya,x,by=c("year","age"))
+    bya <- plyr::join(bya,x,by=c("year","age"))
   }
   # Maturity
   if(is.null(res$mat)) {
-    ibya$mat <- NA
+    bya$mat <- NA
   } else {
     x <- reshape2::melt(res$mat,value.name="mat")
-    ibya <- plyr::join(ibya,x,by=c("year","age"))
+    bya <- plyr::join(bya,x,by=c("year","age"))
   }
   # M
   if(is.null(res$m)) {
-    ibya$m <- NA
+    bya$m <- NA
   } else {
     x <- reshape2::melt(res$m,value.name="m")
-    ibya <- plyr::join(ibya,x,by=c("year","age"))
+    bya <- plyr::join(bya,x,by=c("year","age"))
   }
   # pF
   if(is.null(res$harvest.spwn)) {
-    ibya$pF <- NA
+    bya$pF <- NA
   } else {
     x <- reshape2::melt(res$harvest.spwn,value.name="pF")
-    ibya <- plyr::join(ibya,x,by=c("year","age"))
+    bya <- plyr::join(bya,x,by=c("year","age"))
   }
   # pM
   if(is.null(res$m.spwn)) {
-    ibya$pM <- NA
+    bya$pM <- NA
   } else {
     x <- reshape2::melt(res$m.spwn,value.name="pM")
-    ibya <- plyr::join(ibya,x,by=c("year","age"))
+    bya <- plyr::join(bya,x,by=c("year","age"))
   }
   # fishing mortality
   # Problem here is that res$harvest.spwn gets tested
   #if(!is.null(res$harvest)) {
   #  x <- reshape2::melt(res$harvest,value.name="f")
-  #  ibya <- plyr::join(ibya,x,by=c("year","age"))
+  #  bya <- plyr::join(bya,x,by=c("year","age"))
   #}
   # stock in numbers
   if(!is.null(res$stock.n)) {
     x <- reshape2::melt(res$stock.n,value.name="n")
-    ibya <- plyr::join(ibya,x,by=c("year","age"))
+    bya <- plyr::join(bya,x,by=c("year","age"))
   }
-  res$bya <- ibya
+  
+  bya <- bya[order(bya$year),]
+  res$bya <- bya
   
   return(res)
 }

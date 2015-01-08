@@ -12,6 +12,24 @@ grep2 <- function(directory,pattern) {
   system(cmd)
 }
 
+#' @title find_text
+#' 
+#' @description finds text in files in a directory
+#' 
+#' @export
+#' 
+#' @param directory Name of the directory
+#' @param pattern The string to search for
+
+find_text <- function(pattern,file,directory) {
+  if(!missing(directory)) {
+    file <- paste(directory,file,sep="/")
+  }
+  cm <- paste("grep -1",pattern,file)
+  system(cm)
+}
+
+
 
 
 #' @title Trim 'tabs' from start and end of string
